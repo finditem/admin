@@ -4,7 +4,7 @@ import { CategoryType, ItemStatus, PostType } from "@/types";
 export interface GetMarketingPostsResponse extends ApiBaseResponseType<MarketingPostsResult> {}
 
 export interface MarketingPostsResult {
-  postList: AdminMarketingPostItem[];
+  content: AdminMarketingPostItem[];
   nextCursor: number | null;
   hasNext: boolean;
 }

@@ -3,6 +3,27 @@ import useAppInfiniteQuery from "@/api/_base/query/useAppInfiniteQuery";
 import { CategoryType, ItemStatus } from "@/types";
 import { AdminMarketingPostItem, GetMarketingPostsResponse } from "../types/MarketingPostsType";
 
+/**
+ * 다음 페이지 요청에 쓸 커서를 만듭니다.
+ *
+ * @remarks
+ * - 백엔드는 마지막 게시글 ID(`cursor`)에 더해, 조회수순과 즐겨찾기순 정렬에서는 마지막 게시글의
+ *   조회수(`cursorViewCount`)나 즐겨찾기 수(`cursorFavCount`)를 함께 받아야 다음 페이지를 이어서 준다.
+ */
+const getNextCursor = (lastPage: GetMarketingPostsResponse, sort: string) => {
+  const { hasNext, nextCursor, content } = lastPage.result;
+  if (!hasNext || nextCursor === null) return undefined;
+
+  const lastPost = content.at(-1);
+  if (sort === "MOST_VIEWED" && lastPost) {
+    return { cursor: nextCursor, cursorViewCount: lastPost.viewCount };
+  }
+  if (sort === "MOST_FAVORITED" && lastPost) {
+    return { cursor: nextCursor, cursorFavCount: lastPost.favoriteCount };
+  }
+  return { cursor: nextCursor };
+};
+
 interface UseGetMarketingPostsParams {
   sort?: string;
   category?: CategoryType;
@@ -42,15 +63,13 @@ export const useGetMarketingPosts = (
   return useAppInfiniteQuery<GetMarketingPostsResponse, unknown, AdminMarketingPostItem[]>(
     "auth",
     ["marketing-posts", sort, category, postStatus, startDate, endDate, size, keyword],
-    `/admin/marketing-consent/posts?${params.toString()}`,
+    `/admin/posts/content-policy?${params.toString()}`,
     {
       enabled,
       placeholderData: keepPreviousData,
-      getNextPageParam: (lastPage) =>
-        lastPage.result.hasNext ? lastPage.result.nextCursor : undefined,
+      getNextPageParam: (lastPage) => getNextCursor(lastPage, sort),
       select: (data: InfiniteData<GetMarketingPostsResponse>) =>
-        data.pages.flatMap((page) => page.result.postList ?? []),
-      pageParamName: "cursor",
+        data.pages.flatMap((page) => page.result.content ?? []),
     }
   );
 };

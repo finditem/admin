@@ -11,7 +11,7 @@ async function setupContentAgreeMocks(page: Page, items?: object[]) {
     })
   );
 
-  await page.route("**/api/admin/marketing-consent/posts**", (route) =>
+  await page.route("**/api/admin/posts/content-policy**", (route) =>
     route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -20,7 +20,7 @@ async function setupContentAgreeMocks(page: Page, items?: object[]) {
         code: "200",
         message: "OK",
         result: {
-          postList: items ?? [MOCK_POST_ITEM],
+          content: items ?? [MOCK_POST_ITEM],
           nextCursor: null,
           hasNext: false,
         },
@@ -55,7 +55,7 @@ test.describe("관리자 콘텐츠 활용 동의 페이지 (/admin/content-agree
     await setupContentAgreeMocks(page);
     await page.goto("/admin/content-agree");
 
-    await page.route("**/api/admin/marketing-consent/posts**", (route) =>
+    await page.route("**/api/admin/posts/content-policy**", (route) =>
       route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -63,7 +63,7 @@ test.describe("관리자 콘텐츠 활용 동의 페이지 (/admin/content-agree
           isSuccess: true,
           code: "200",
           message: "OK",
-          result: { postList: [], nextCursor: null, hasNext: false },
+          result: { content: [], nextCursor: null, hasNext: false },
         }),
       })
     );
@@ -89,7 +89,7 @@ test.describe("관리자 콘텐츠 활용 동의 검색 페이지 (/admin/conten
         body: JSON.stringify(MOCK_AUTH_REFRESH),
       })
     );
-    await page.route("**/api/admin/marketing-consent/posts**", (route) =>
+    await page.route("**/api/admin/posts/content-policy**", (route) =>
       route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -97,7 +97,7 @@ test.describe("관리자 콘텐츠 활용 동의 검색 페이지 (/admin/conten
           isSuccess: true,
           code: "200",
           message: "OK",
-          result: { postList: [MOCK_POST_ITEM], nextCursor: null, hasNext: false },
+          result: { content: [MOCK_POST_ITEM], nextCursor: null, hasNext: false },
         }),
       })
     );

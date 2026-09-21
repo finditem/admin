@@ -63,7 +63,12 @@ const useAppInfiniteQuery = <TQueryFnData, TError = unknown, TData = TQueryFnDat
     queryFn: async ({ pageParam }) => {
       const params = new URLSearchParams();
 
-      if (pageParam !== undefined && pageParam !== null) {
+      // 커서가 여러 값으로 이뤄진 경우 객체로 넘기면 각 키를 쿼리 파라미터로 붙인다.
+      if (pageParam !== null && typeof pageParam === "object") {
+        Object.entries(pageParam).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) params.append(key, String(value));
+        });
+      } else if (pageParam !== undefined && pageParam !== null) {
         params.append(pageParamName, String(pageParam));
       }
 
