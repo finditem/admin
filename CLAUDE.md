@@ -6,21 +6,27 @@
 
 - Next.js 15 / React 19 / TypeScript 5 (`next.config.ts`에서 `reactCompiler: true` — React Compiler 활성화)
 - Tailwind CSS 3 (디자인 토큰은 `src/utils/tokens/tailwind.config.js`, FI-DS에서 생성된 값)
-- 테스트: Jest(단위)
+- 테스트: Jest(단위), Playwright(e2e, `tests/e2e`). e2e는 API를 `page.route`로 흉내 내고 `src/mock/data`의 목데이터를 쓴다.
 - 패키지 매니저: pnpm(`package.json`의 `packageManager`). npm과 npx 대신 `pnpm add`, `pnpm exec`를 쓴다.
-- 운영 앱과 달리 next-intl, Sentry, PWA, Capacitor, MSW, Storybook, Playwright, ESLint는 넣지 않았다. 어드민은 한국어 전용이므로 문구는 번역 함수 없이 한국어로 작성한다.
+- 운영 앱과 달리 next-intl, Sentry, PWA, Capacitor, MSW, Storybook, ESLint는 넣지 않았다. 어드민은 한국어 전용이므로 문구는 번역 함수 없이 한국어로 작성한다.
 
 ## 구조
 
 ```
 src/
-  app/            # App Router
-    */            # 라우트별 _components _hooks _types _utils (private 폴더)
-  components/     # 전역 공통
-  hooks/ store/ utils/ types/  # 도메인 구분 없이 종류별 최상위에 분산
+  app/
+    (admin)/admin/  # 관리자 영역 (/admin/...)
+    (auth)/login/   # 로그인
+    */              # 라우트별 _components _hooks _types _utils (private 폴더)
+  components/       # 전역 공통
+  hooks/ utils/ types/ constants/  # 도메인 구분 없이 종류별 최상위에 분산
+  api/              # _base(axios, react-query 래퍼)와 fetch/<도메인>
+  middleware.ts     # 계정 권한별 영역 이동
   mock/
 ```
 
+- 계정 권한(role)별 영역은 `src/app`의 라우트 그룹 하나로 묶고, `src/constants/ROLE_AREAS.ts`에 권한과 첫 화면을 등록한다. 미들웨어가 이 목록으로 접근을 검사하고 로그인 후 이동할 곳을 정한다. B2B 같은 영역을 추가할 때도 같은 방식을 따르며, 모노레포로 나누지 않는다.
+- 게시글 상세, 공지 상세, 비밀번호 변경처럼 운영 앱에만 있는 화면으로 연결할 때는 `getServiceUrl`로 절대 주소를 만든다.
 - 라우트 전용 코드는 해당 라우트 폴더 하위 `_components`/`_hooks`/`_types`/`_utils`(private 폴더)에 둔다. 여러 라우트에서 재사용되면 그때 `src/components`, `src/hooks` 등 전역 폴더로 올린다.
 - `hooks/`, `store/`, `utils/`는 도메인별로 묶지 않고, 함수/훅 하나당 폴더 하나(`utils/cn/`, `hooks/useLogout/` 등)로 세분화하는 컨벤션이다. 새 유틸/훅을 추가할 때도 이 패턴을 따른다.
 - `_components` 하위 컴포넌트도 동일하게 컴포넌트 하나당 폴더 하나. 그 컴포넌트 내부에서만 쓰는 하위 조각은 `_internal` 폴더에 둔다.
@@ -35,6 +41,7 @@ src/
 ## 검증 커맨드
 
 - 기본: `pnpm test` + `pnpm build` (타입체크 포함). 대부분의 회귀를 이 둘로 잡는다.
+- e2e: `pnpm build` 뒤 `CI=1 E2E_PORT=3918 pnpm test:e2e`. `CI`를 주면 dev 서버 대신 빌드 결과로 서버를 띄우고, 포트를 바꿔 켜 둔 dev 서버와 겹치지 않게 한다.
 - 타입만 확인하면 되는 경우는 `pnpm exec tsc --noEmit`으로 대신한다. dev 서버가 켜져 있을 때 `pnpm build`를 돌리면 같은 `.next`를 덮어써 dev 런타임이 깨진다.
 
 ## 텍스트 작성 원칙
