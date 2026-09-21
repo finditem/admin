@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/utils";
+import { FALLBACK_SRC, getAvatarSrc } from "./_utils/getAvatarSrc";
 
 /**
  * 유저 프로필 이미지 컴포넌트입니다.
@@ -34,13 +35,11 @@ interface ProfileAvatarProps {
  * ```
  */
 
-const FALLBACK_SRC = "/user/default-profile.svg";
-
 const ProfileAvatar = ({ src, alt, size, className, priority = false }: ProfileAvatarProps) => {
-  const [imgSrc, setImgSrc] = useState(src?.trim() ? src : FALLBACK_SRC);
+  const [imgSrc, setImgSrc] = useState(getAvatarSrc(src));
 
   useEffect(() => {
-    setImgSrc(src?.trim() ? src : FALLBACK_SRC);
+    setImgSrc(getAvatarSrc(src));
   }, [src]);
 
   return (

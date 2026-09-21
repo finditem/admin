@@ -47,6 +47,11 @@ describe("<ProfileAvatar />", () => {
     expect(screen.getByRole("img")).toHaveAttribute("src", FALLBACK_SRC);
   });
 
+  it("src가 이미지 주소 형식이 아니면 기본 프로필 이미지를 렌더링합니다.", () => {
+    render(<ProfileAvatar src="0" size={40} />);
+    expect(screen.getByRole("img")).toHaveAttribute("src", FALLBACK_SRC);
+  });
+
   it("src가 빈 문자열이면 기본 프로필 이미지를 렌더링합니다.", () => {
     render(<ProfileAvatar src="   " size={40} />);
     expect(screen.getByRole("img")).toHaveAttribute("src", FALLBACK_SRC);
