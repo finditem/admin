@@ -11,6 +11,7 @@
     "start": "next start",
     "test": "jest",
     "test:ci": "jest --ci --runInBand",
+    "test:e2e": "playwright test",
     "prepare": "husky",
     "generate:icon-sprite": "node scripts/generate-icon-sprite.js"
   },
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.5.3",
     "@commitlint/config-conventional": "^20.5.3",
+    "@playwright/test": "^1.62.1",
     "@svgr/webpack": "^8.1.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
