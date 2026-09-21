@@ -1,0 +1,34 @@
+module.exports = {
+  preset: "ts-jest",
+  testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  transform: {
+    "^.+\\.(ts|tsx)$": [
+      "ts-jest",
+      { tsconfig: { jsx: "react-jsx" } }, // JSX 변환 보장
+    ],
+    "^.+\\.svg$": "jest-transformer-svg", // SVG 변환 추가
+  },
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "\\.(css|scss|sass|less)$": "<rootDir>/src/mock/styleMock.js",
+  },
+  testPathIgnorePatterns: ["<rootDir>/tests/e2e/"],
+  testMatch: ["**/?(*.)+(test|spec).(ts|tsx)"],
+
+  reporters: [
+    "default",
+    [
+      "jest-junit",
+      {
+        outputDirectory: "test-results",
+        outputName: "junit.xml",
+        addFileAttribute: "true",
+      },
+    ],
+  ],
+
+  collectCoverage: true,
+  collectCoverageFrom: ["src/**/*.{ts,tsx}"],
+  coverageDirectory: "coverage",
+};
