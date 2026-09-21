@@ -1,6 +1,8 @@
 import "./globals.css";
+import ReactDOM from "react-dom";
 import localFont from "next/font/local";
 import { Metadata, Viewport } from "next";
+import AppProviders from "@/providers/AppProviders";
 
 const pretendard = localFont({
   src: [
@@ -62,10 +64,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  ReactDOM.preload("/icons/sprite.svg", { as: "image", type: "image/svg+xml" });
+
   return (
     <html lang="ko" className={pretendard.variable}>
       <body className="mx-auto max-w-[768px] border-x-2 flex-col-center">
-        <main className="w-full flex-1">{children}</main>
+        <AppProviders>
+          <main className="w-full flex-1">{children}</main>
+        </AppProviders>
       </body>
     </html>
   );
