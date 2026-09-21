@@ -7,6 +7,7 @@
 - Next.js 15 / React 19 / TypeScript 5 (`next.config.ts`에서 `reactCompiler: true` — React Compiler 활성화)
 - Tailwind CSS 3 (디자인 토큰은 `src/utils/tokens/tailwind.config.js`, FI-DS에서 생성된 값)
 - 테스트: Jest(단위)
+- 패키지 매니저: pnpm(`package.json`의 `packageManager`). npm과 npx 대신 `pnpm add`, `pnpm exec`를 쓴다.
 - 운영 앱과 달리 next-intl, Sentry, PWA, Capacitor, MSW, Storybook, Playwright, ESLint는 넣지 않았다. 어드민은 한국어 전용이므로 문구는 번역 함수 없이 한국어로 작성한다.
 
 ## 구조
@@ -33,8 +34,8 @@ src/
 
 ## 검증 커맨드
 
-- 기본: `npm run test` + `npm run build` (타입체크 포함). 대부분의 회귀를 이 둘로 잡는다.
-- 타입만 확인하면 되는 경우는 `npx tsc --noEmit`으로 대신한다. dev 서버가 켜져 있을 때 `npm run build`를 돌리면 같은 `.next`를 덮어써 dev 런타임이 깨진다.
+- 기본: `pnpm test` + `pnpm build` (타입체크 포함). 대부분의 회귀를 이 둘로 잡는다.
+- 타입만 확인하면 되는 경우는 `pnpm exec tsc --noEmit`으로 대신한다. dev 서버가 켜져 있을 때 `pnpm build`를 돌리면 같은 `.next`를 덮어써 dev 런타임이 깨진다.
 
 ## 텍스트 작성 원칙
 
@@ -47,7 +48,7 @@ src/
 ## 표준 작업 흐름
 
 1. 기존 코드 패턴과 디렉토리 구조를 그대로 따른다. 새 추상화나 새로운 디렉토리 규칙을 임의로 만들지 않는다.
-2. `npm run dev`는 사용자가 이미 띄워서 켜둔 상태라고 가정한다. Claude가 직접 실행하지 않는다 — 장기 실행 프로세스라 포트 충돌이나 좀비 프로세스를 남길 수 있다.
+2. `pnpm dev`는 사용자가 이미 띄워서 켜둔 상태라고 가정한다. Claude가 직접 실행하지 않는다 — 장기 실행 프로세스라 포트 충돌이나 좀비 프로세스를 남길 수 있다.
 3. 로컬 `git commit`은 응답 흐름에 맞춰 자율적으로 수행할 수 있다. 단, 이번 응답에서 Claude가 Edit/Write로 직접 건드린 파일만 `git add`한다 (`git add -A`/`git add .` 금지). 커밋 직전 `git status`로 staging 대상이 의도한 파일과 정확히 일치하는지 확인한다.
 4. `git push`, PR 생성 등 원격 저장소에 영향을 주는 작업은 사용자가 명시적으로 요청하기 전에는 수행하지 않는다. force-push는 요청 여부와 관계없이 수행하지 않는다.
 
