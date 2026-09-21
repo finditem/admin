@@ -210,6 +210,18 @@ module.exports = {
           white_8: "rgba(255, 255, 255, 0.08)",
           white_12: "rgba(255, 255, 255, 0.12)",
         },
+        brick: {
+          50: "#fbe8e9",
+          100: "#ffcbc1",
+          200: "#ffa996",
+          300: "#ff876c",
+          400: "#ff6b4c",
+          500: "#ff512f",
+          600: "#fc4928",
+          700: "#ec4725",
+          800: "#dd4020",
+          900: "#be391c",
+        },
         gray: {
           0: "#ffffff",
         },
@@ -367,12 +379,13 @@ module.exports = {
         },
         accent: {
           kakao: "#fee500",
-          foundItem: "#eaf2fe",
-          lostItem: "#fef4e6",
+          foundItem: "#ebfbf1",
+          lostItem: "#fdf1ed",
           foundItem_2: "#eaf2fe",
           lostItem_2: "#fef4e6",
           kakao_2: "#fee500",
           lostItem2: "#ffefad",
+          location: "#e6e6f9",
         },
       },
       fg: {
@@ -498,6 +511,7 @@ module.exports = {
           foundItem: "#4f95ff",
           lostItem_2: "#ff9200",
           foundItem_2: "#4f95ff",
+          localInfo: "#dd4020",
         },
       },
       border: {
@@ -599,6 +613,7 @@ module.exports = {
         notificationGrey: "#5d5d5d",
         notificationYellow: "#ffc642",
         notificationBrand: "#0aa874",
+        layout_3depth: "#e4e4e4",
       },
       spacing: {
         padding: {
