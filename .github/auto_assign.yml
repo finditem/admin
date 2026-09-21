@@ -1,0 +1,10 @@
+addReviewers: true
+
+addAssignees: author
+
+reviewers:
+  - wlrnjs
+  - suhyeon0111
+  - junye0l
+
+numberOfReviewers: 0
