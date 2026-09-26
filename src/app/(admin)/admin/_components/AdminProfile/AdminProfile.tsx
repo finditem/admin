@@ -10,7 +10,7 @@ const AdminProfile = () => {
   const { email, nickname, profileImg } = data?.result || {};
 
   return (
-    <header className="flex items-center justify-between px-5 py-[30px] pc:flex-col pc:items-stretch pc:gap-5">
+    <header className="flex items-center justify-between px-5 py-[30px] pc:flex-col pc:items-stretch pc:gap-4 pc:py-6">
       {isLoading ? (
         <SkeletonAdminProfile />
       ) : (

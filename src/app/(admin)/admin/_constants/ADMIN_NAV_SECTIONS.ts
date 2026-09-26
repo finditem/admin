@@ -2,6 +2,11 @@ import { getServiceUrl } from "@/utils";
 
 export const ADMIN_NAV_SECTIONS = [
   {
+    id: "analytics",
+    label: "통계",
+    items: [{ href: "/admin/analytics", title: "서비스 통계" }],
+  },
+  {
     id: "notice",
     label: "공지사항",
     items: [{ href: "/admin/notice", title: "공지사항" }],
