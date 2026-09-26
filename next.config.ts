@@ -30,6 +30,9 @@ const securityHeaders = [
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "";
 
 const nextConfig: NextConfig = {
+  // GA Data API 클라이언트는 gRPC(google-gax)를 써서 webpack으로 묶으면 내부 package.json을 찾지 못한다.
+  // 서버에서 node_modules 그대로 불러오도록 번들에서 뺀다.
+  serverExternalPackages: ["@google-analytics/data"],
   experimental: {
     reactCompiler: true,
   },
