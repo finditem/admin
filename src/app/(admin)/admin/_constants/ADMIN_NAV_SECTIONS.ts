@@ -4,7 +4,10 @@ export const ADMIN_NAV_SECTIONS = [
   {
     id: "analytics",
     label: "통계",
-    items: [{ href: "/admin/analytics", title: "서비스 통계" }],
+    items: [
+      { href: "/admin/analytics", title: "서비스 통계" },
+      { href: "/admin/db", title: "DB 조회" },
+    ],
   },
   {
     id: "notice",
