@@ -45,8 +45,9 @@ test.describe("관리자 메인 페이지 (/admin)", () => {
     await setupAdminMainMocks(page);
     await page.goto("/admin");
 
-    await expect(page.getByText("관리자", { exact: true })).toBeVisible();
-    await expect(page.getByText("admin@example.com")).toBeVisible();
+    // PC 미만에서도 사이드바가 숨긴 채로 렌더되어 같은 프로필이 두 번 잡히므로, 보이는 쪽만 확인한다.
+    await expect(page.getByText("관리자", { exact: true }).filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("admin@example.com").filter({ visible: true })).toBeVisible();
   });
 
   test("프로필 수정 버튼이 표시된다", async ({ page }) => {
