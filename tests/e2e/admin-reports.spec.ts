@@ -109,7 +109,7 @@ test.describe("관리자 신고/문의 내역 페이지 (/admin/reports)", () =>
     await setupReportsMocks(page);
     await page.goto("/admin/reports");
 
-    await page.locator("button", { hasText: "문의" }).click();
+    await page.getByRole("button", { name: "문의", exact: true }).click();
 
     await expect(page.getByText("로그인이 되지 않습니다.")).toBeVisible();
     await expect(page.getByText("로그인 시 계속 오류가 발생합니다.")).toBeVisible();
@@ -126,7 +126,7 @@ test.describe("관리자 신고/문의 내역 페이지 (/admin/reports)", () =>
     await setupReportsMocks(page, { inquiries: [] });
     await page.goto("/admin/reports");
 
-    await page.locator("button", { hasText: "문의" }).click();
+    await page.getByRole("button", { name: "문의", exact: true }).click();
 
     await expect(page.getByText("문의 내역이 없어요")).toBeVisible();
   });
@@ -151,7 +151,7 @@ test.describe("관리자 신고/문의 내역 페이지 (/admin/reports)", () =>
     await setupReportsMocks(page);
     await page.goto("/admin/reports");
 
-    await page.locator("button", { hasText: "문의" }).click();
+    await page.getByRole("button", { name: "문의", exact: true }).click();
 
     await page.route("**/api/admin/inquiries/1", (route) =>
       route.fulfill({
