@@ -36,7 +36,7 @@ const NoticeEditForm = ({ noticeId }: NoticeEditFormProps) => {
       <CategoryInput />
       <ContentInput />
       <NoticeEditImageSection helpText={IMAGE_HELP_TEXT} />
-      <div className="sticky bottom-0 w-full max-w-[764px] border-t border-divider-default bg-white">
+      <div className="sticky bottom-0 w-full max-w-[764px] border-t border-divider-default bg-white pc:max-w-none">
         <WriteActionSection disabled={isSubmitDisabled} />
       </div>
     </form>

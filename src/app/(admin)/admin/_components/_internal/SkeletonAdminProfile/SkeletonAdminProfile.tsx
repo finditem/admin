@@ -1,6 +1,6 @@
 const SkeletonAdminProfile = () => {
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-6 pc:gap-4">
       <div className="skeleton-animation size-[60px] rounded-full" />
       <div className="flex flex-col gap-2">
         <div className="skeleton-animation h-5 w-[70px] rounded-full" />

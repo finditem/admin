@@ -10,8 +10,14 @@ const page = async () => {
     <div className="h-base">
       <h1 className="sr-only">관리자 페이지</h1>
 
-      <AdminProfile />
-      <AdminMenuSection />
+      <div className="pc:hidden">
+        <AdminProfile />
+        <AdminMenuSection />
+      </div>
+
+      <p className="hidden py-[160px] text-body1-regular text-layout-body-default pc:flex-center">
+        왼쪽 메뉴에서 관리할 항목을 선택해 주세요.
+      </p>
     </div>
   );
 };

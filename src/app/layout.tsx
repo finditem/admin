@@ -68,7 +68,7 @@ export default function RootLayout({
 
   return (
     <html lang="ko" className={pretendard.variable}>
-      <body className="mx-auto max-w-[768px] border-x-2 flex-col-center">
+      <body className="mx-auto max-w-[768px] border-x-2 flex-col-center pc:max-w-none pc:border-x-0">
         <AppProviders>
           <main className="w-full flex-1">{children}</main>
         </AppProviders>
