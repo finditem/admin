@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
+import { AdminSidebar } from "./_components";
 
 export const metadata: Metadata = {
   title: {
@@ -34,7 +35,12 @@ export const metadata: Metadata = {
 };
 
 const layout = ({ children }: { children: ReactNode }) => {
-  return children;
+  return (
+    <div className="pc:flex">
+      <AdminSidebar />
+      <div className="pc:min-w-0 pc:flex-1">{children}</div>
+    </div>
+  );
 };
 
 export default layout;

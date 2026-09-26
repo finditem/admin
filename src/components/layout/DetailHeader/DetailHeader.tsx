@@ -12,6 +12,7 @@ import { cn } from "@/utils";
  * - `"use client"`이며 `next/navigation`의 `useRouter`로 뒤로가기 동작을 처리합니다.
  * - `onBack`이 있으면 뒤로 버튼은 그만 호출하고, 없으면 `sessionStorage`의 `__fmi_history_count`를 보고 `router.back()` 또는 `/`로 이동합니다.
  * - `fixed` 헤더 아래 콘텐츠가 가리지 않도록 동일 높이의 자리 표시 `div`를 둡니다.
+ * - PC에서는 사이드바 옆 본문 폭을 따라가도록 `sticky`로 바뀌고 자리 표시 `div`는 숨깁니다.
  * - 오른쪽 액션은 `DetailHeaderParts`(저장, 검색, 즐겨찾기, 메뉴 등)를 `children`으로 넣는 패턴을 씁니다.
  *
  * @author hyungjun
@@ -81,6 +82,7 @@ const DetailHeader = ({ title = "", children, onBack, onBeforeBack }: DetailHead
       <header
         className={cn(
           "fixed top-0 z-30 mx-auto flex w-full max-w-[764px] items-center justify-between bg-white px-5 pt-[var(--safe-area-top)]",
+          "pc:sticky pc:max-w-none pc:border-b pc:border-divider-default",
           HEADER_HEIGHT
         )}
       >
@@ -101,7 +103,7 @@ const DetailHeader = ({ title = "", children, onBack, onBeforeBack }: DetailHead
           </div>
         )}
       </header>
-      <div className={HEADER_HEIGHT} aria-hidden />
+      <div className={cn(HEADER_HEIGHT, "pc:hidden")} aria-hidden />
     </>
   );
 };

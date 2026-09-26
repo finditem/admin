@@ -39,7 +39,7 @@ const AdminLoginForm = () => {
 
   return (
     <form onSubmit={onSubmitLogin}>
-      <div className="flex min-h-dvh w-full gap-12 px-4 py-[64px] flex-col-center tablet:px-[80px]">
+      <div className="flex min-h-dvh w-full gap-12 px-4 py-[64px] flex-col-center tablet:px-[80px] pc:mx-auto pc:max-w-[480px] pc:px-0">
         <div className="flex w-full flex-col items-center gap-10">
           <Icon name="Logo" size={120} title="찾아줘! 관리자" />
 
