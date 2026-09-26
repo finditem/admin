@@ -30,6 +30,16 @@ export const ADMIN_NAV_SECTIONS = [
     items: [{ href: "/admin/content-agree", title: "콘텐츠 활용 동의 게시글" }],
   },
   {
+    id: "shortcut",
+    label: "바로가기",
+    items: [
+      { href: getServiceUrl("/"), title: "찾아줘! 서비스", external: true },
+      { href: "https://github.com/finditem", title: "GitHub", external: true },
+      { href: "https://flow.finditem.kr/", title: "일정관리", external: true },
+      { href: "https://status.finditem.kr/", title: "외부 API 모니터링", external: true },
+    ],
+  },
+  {
     id: "account",
     label: "계정 설정",
     items: [{ href: getServiceUrl("/change-password"), title: "비밀번호 변경" }],

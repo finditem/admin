@@ -6,5 +6,6 @@ export { default as AdminSearch } from "./AdminSearch/AdminSearch";
 export { default as AdminReportsItem } from "./AdminReportsItem/AdminReportsItem";
 export { default as AdminDetailSection } from "./AdminDetailSection/AdminDetailSection";
 export { default as AdminDropdown } from "./AdminDropdown/AdminDropdown";
+export { default as AdminNavCollapsedScript } from "./AdminNavCollapsedScript/AdminNavCollapsedScript";
 export { default as AdminSidebar } from "./AdminSidebar/AdminSidebar";
 export { default as InquiryBlockIpButton } from "./InquiryBlockIpButton/InquiryBlockIpButton";

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
-import { AdminSidebar } from "./_components";
+import { AdminNavCollapsedScript, AdminSidebar } from "./_components";
+import { ADMIN_NAV_COLLAPSED_ATTRIBUTE } from "./_constants/ADMIN_NAV_COLLAPSED";
 
 export const metadata: Metadata = {
   title: {
@@ -36,7 +37,8 @@ export const metadata: Metadata = {
 
 const layout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="pc:flex">
+    <div className="pc:flex" {...{ [ADMIN_NAV_COLLAPSED_ATTRIBUTE]: "" }} suppressHydrationWarning>
+      <AdminNavCollapsedScript />
       <AdminSidebar />
       <div className="pc:min-w-0 pc:flex-1">{children}</div>
     </div>
