@@ -131,7 +131,7 @@ const InputText = ({
   btnOption = {},
   caption = {},
 }: InputTextProps) => {
-  const { name, type = "text", validation, disabled } = inputOption;
+  const { name, type = "text", validation, disabled, ...restInputOption } = inputOption;
   const { btnType = "button", btnOnClick, btnLabel, ...restBtnOption } = btnOption;
   const { isSuccess, successMessage, rule, timer } = caption;
 
@@ -171,6 +171,7 @@ const InputText = ({
         <div className="relative flex flex-1 flex-row">
           <input
             id={name}
+            {...restInputOption}
             {...register(name, validation)}
             className={cn(
               BASE_INPUT_STYLE,
@@ -179,7 +180,6 @@ const InputText = ({
               showError && "border border-system-warning"
             )}
             disabled={disabled}
-            {...inputOption}
             type={actualType}
           />
 
