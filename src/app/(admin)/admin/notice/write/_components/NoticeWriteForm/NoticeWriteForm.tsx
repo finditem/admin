@@ -11,10 +11,16 @@ const IMAGE_HELP_TEXT = "*사진은 최대 5장 첨부가 가능합니다. (선�
 const canSubmit = (values: NoticeWriteFormValues): boolean =>
   Boolean(values.title?.trim() && values.category && values.content?.trim());
 
-const NoticeWriteForm = ({ methods }: { methods: UseFormReturn<NoticeWriteFormValues> }) => {
+interface NoticeWriteFormProps {
+  methods: UseFormReturn<NoticeWriteFormValues>;
+  /** 임시저장본을 이어 쓰는 중이면 그 공지 ID. 발행할 때 새로 만들지 않고 이 공지를 발행한다. */
+  draftId: number | null;
+}
+
+const NoticeWriteForm = ({ methods, draftId }: NoticeWriteFormProps) => {
   const values = useWatch({ control: methods.control });
-  const isSubmitDisabled = !canSubmit(values as NoticeWriteFormValues);
-  const { submitNotice } = useSubmitNotice();
+  const { submitNotice, isPending } = useSubmitNotice(draftId);
+  const isSubmitDisabled = !canSubmit(values as NoticeWriteFormValues) || isPending;
 
   const onSubmit = (data: NoticeWriteFormValues) => submitNotice(data);
 

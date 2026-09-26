@@ -20,3 +20,9 @@ export { usePutInquiryStatus } from "./api/usePutInquiryStatus";
 export { usePostReportComments } from "./api/usePostReportComments";
 export { usePutNoticeDetail } from "./api/usePutNoticeDetail";
 export { useGetMarketingPosts } from "./api/useGetMarketingPosts";
+export * from "./types/NoticeDraftType";
+
+export { useDeleteNotice } from "./api/useDeleteNotice";
+export { useGetNoticeDraft } from "./api/useGetNoticeDraft";
+export { usePostNoticeDraft } from "./api/usePostNoticeDraft";
+export { usePutNoticeDraft } from "./api/usePutNoticeDraft";
