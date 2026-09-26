@@ -143,4 +143,54 @@ test.describe("관리자 비회원 문의 상세 페이지 (/admin/guest-inquiri
 
     await expect(page.getByRole("button", { name: "이메일 복사하기" })).toBeVisible();
   });
+
+  test("답변하지 않은 문의는 이메일 답변 폼과 IP 차단 버튼이 표시된다", async ({ page }) => {
+    await page.route("**/api/auth/refresh", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(MOCK_AUTH_REFRESH),
+      })
+    );
+    await page.route("**/api/admin/guest-inquiries/1", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ...MOCK_GUEST_INQUIRY_DETAIL,
+          result: { ...MOCK_GUEST_INQUIRY_DETAIL.result, answered: false },
+        }),
+      })
+    );
+
+    await page.goto("/admin/guest-inquiries/1");
+
+    const sendButton = page.getByRole("button", { name: "답변 보내기" });
+    await expect(sendButton).toBeDisabled();
+    await page.getByLabel("답변 내용").fill("확인 후 조치했습니다.");
+    await expect(sendButton).toBeEnabled();
+    await expect(page.getByRole("button", { name: "IP 차단하기" })).toBeVisible();
+  });
+
+  test("이미 답변한 문의는 답변 폼 대신 안내 문구가 표시된다", async ({ page }) => {
+    await page.route("**/api/auth/refresh", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(MOCK_AUTH_REFRESH),
+      })
+    );
+    await page.route("**/api/admin/guest-inquiries/1", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(MOCK_GUEST_INQUIRY_DETAIL),
+      })
+    );
+
+    await page.goto("/admin/guest-inquiries/1");
+
+    await expect(page.getByText("답변을 보낸 문의예요.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "답변 보내기" })).toHaveCount(0);
+  });
 });
