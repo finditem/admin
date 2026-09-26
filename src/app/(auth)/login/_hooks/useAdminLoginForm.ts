@@ -1,5 +1,5 @@
 import { useRef, useState, type BaseSyntheticEvent } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useFormContext } from "react-hook-form";
 import { AxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,12 +20,13 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * - 로그인에 성공하면 `callbackUrl`이 안전한 내부 경로일 때 그곳으로, 아니면 `/`로 이동합니다.
  *   `/`에서는 미들웨어가 계정 권한에 맞는 영역으로 보냅니다.
  * - 요청 중이거나 이동 중일 때는 중복 제출을 막습니다.
+ *
+ * @param callbackUrl - 로그인 후 돌아갈 경로(`callbackUrl` 쿼리)
  */
 
-const useAdminLoginForm = () => {
+const useAdminLoginForm = (callbackUrl?: string) => {
   const { handleSubmit } = useFormContext<AdminLoginFormType>();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const { mutateAsync: emailLoginMutateAsync, isPending } = useApiEmailLogin();
@@ -44,8 +45,7 @@ const useAdminLoginForm = () => {
       setIsRedirecting(true);
       queryClient.clear();
 
-      const rawCallback = searchParams.get("callbackUrl");
-      router.replace(isValidCallbackUrl(rawCallback) ? rawCallback : "/");
+      router.replace(isValidCallbackUrl(callbackUrl) ? callbackUrl : "/");
     } catch (error) {
       const errorCode = (error as AxiosError<ApiBaseResponseType<null>>).response?.data?.code;
       const toast = (errorCode && LOGIN_ERROR_TOAST[errorCode]) || LOGIN_ERROR_TOAST.COMMON500;
