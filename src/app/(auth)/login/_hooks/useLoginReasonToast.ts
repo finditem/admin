@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
 import { useToast } from "@/context/ToastContext";
 import { LOGIN_REASON_TOAST } from "../_constants/LOGIN_REASON_TOAST";
 
@@ -9,13 +8,13 @@ import { LOGIN_REASON_TOAST } from "../_constants/LOGIN_REASON_TOAST";
  * @remarks
  * - 세션 만료(`session-expired`)와 권한 없음(`forbidden`)을 안내합니다.
  * - 쿠키 정리는 미들웨어가 담당합니다.
+ *
+ * @param reason - 로그인 화면으로 보내진 이유(`reason` 쿼리)
  */
 
-const useLoginReasonToast = () => {
+const useLoginReasonToast = (reason?: string) => {
   const { addToast } = useToast();
-  const searchParams = useSearchParams();
   const isShown = useRef(false);
-  const reason = searchParams.get("reason");
 
   useEffect(() => {
     const toast = reason ? LOGIN_REASON_TOAST[reason] : undefined;
