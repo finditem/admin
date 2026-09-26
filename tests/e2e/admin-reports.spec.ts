@@ -144,7 +144,7 @@ test.describe("관리자 신고/문의 내역 페이지 (/admin/reports)", () =>
     );
 
     await page.getByText("분실물과 무관한 홍보성 게시글이에요.").click();
-    await page.waitForURL("**/admin/reports/report/1");
+    await page.waitForURL(/\/admin\/reports\/report\/1(\?|$)/);
   });
 
   test("문의 항목 클릭 시 문의 상세 페이지로 이동한다", async ({ page }) => {
@@ -162,7 +162,7 @@ test.describe("관리자 신고/문의 내역 페이지 (/admin/reports)", () =>
     );
 
     await page.getByText("로그인이 되지 않습니다.").click();
-    await page.waitForURL("**/admin/reports/inquiry/1");
+    await page.waitForURL(/\/admin\/reports\/inquiry\/1(\?|$)/);
   });
 });
 

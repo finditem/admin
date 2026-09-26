@@ -8,7 +8,8 @@ import { REPORT_TYPE_TITLE } from "../../_constants/REPORT_TYPE_TITLE";
 
 export const toReportItemVM = (item: AdminReportItem): AdminReportsItemData => {
   return {
-    href: `/admin/reports/report/${item.reportId}`,
+    // 상세 응답에는 신고자 ID가 없어서, 유저 정보로 이어지도록 목록의 ID를 쿼리로 넘긴다.
+    href: `/admin/reports/report/${item.reportId}${item.reporterId ? `?userId=${item.reporterId}` : ""}`,
     title: REPORT_TYPE_TITLE[item.reportType],
     content: item.reason,
     nickname: item.reporterNickname,
@@ -21,7 +22,8 @@ export const toReportItemVM = (item: AdminReportItem): AdminReportsItemData => {
 
 export const toInquiryItemVM = (item: AdminInquiriesItem): AdminReportsItemData => {
   return {
-    href: `/admin/reports/inquiry/${item.inquiryId}`,
+    // 상세 응답에는 문의자 ID가 없어서, 유저 정보로 이어지도록 목록의 ID를 쿼리로 넘긴다.
+    href: `/admin/reports/inquiry/${item.inquiryId}${item.userId ? `?userId=${item.userId}` : ""}`,
     title: item.title,
     content: item.content,
     nickname: item.nickname,

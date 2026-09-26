@@ -17,6 +17,7 @@ export { default as DateWheel } from "./DateWheel/DateWheel";
 export { default as InputComment } from "./Input/InputComment/InputComment";
 export { default as InputCommentField } from "./Input/InputComment/InputComment";
 export { default as ModalLayout } from "./Modal/_internal/ModalLayout";
+export { default as ConfirmModal } from "./Modal/ConfirmModal";
 export { default as DeleteButton } from "./Input/_internal/DeleteButton/DeleteButton";
 export type { IconName } from "./Icon/Icon";
 export type { InputTextProps } from "./Input/InputText/InputText";

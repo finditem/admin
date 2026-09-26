@@ -20,6 +20,14 @@ jest.mock("@/app/(admin)/admin/_components", () => ({
   AdminDetailSection: ({ data }: any) => (
     <div data-testid="detail-section" data-username={data?.email} />
   ),
+  InquiryBlockIpButton: ({ inquiryId }: any) => (
+    <div data-testid="block-ip" data-inquiry-id={inquiryId} />
+  ),
+}));
+
+jest.mock("../GuestInquiryReplyForm/GuestInquiryReplyForm", () => ({
+  __esModule: true,
+  default: ({ email }: any) => <div data-testid="reply-form" data-email={email} />,
 }));
 
 const addToastMock = jest.fn();
@@ -128,5 +136,25 @@ describe("GuestInquiriesDetailView", () => {
 
     expect(writeText).toHaveBeenCalledTimes(1);
     expect(addToastMock).toHaveBeenCalledWith("이메일 복사에 실패했어요", "error");
+  });
+
+  it("답변하지 않은 문의는 답변 폼과 IP 차단 버튼을 보여줌", () => {
+    render(<GuestInquiriesDetailView id={1} />, { wrapper: createWrapper() });
+
+    expect(screen.getByTestId("reply-form")).toHaveAttribute("data-email", "admin@gmail.com");
+    expect(screen.getByTestId("block-ip")).toHaveAttribute("data-inquiry-id", "1");
+  });
+
+  it("이미 답변한 문의는 답변 폼 대신 안내 문구를 보여줌", () => {
+    mockedUseGetDetailGuestInquiries.mockReturnValue({
+      data: { result: { email: "admin@gmail.com", answered: true } },
+      isLoading: false,
+      isError: false,
+    });
+
+    render(<GuestInquiriesDetailView id={1} />, { wrapper: createWrapper() });
+
+    expect(screen.queryByTestId("reply-form")).not.toBeInTheDocument();
+    expect(screen.getByText("답변을 보낸 문의예요.")).toBeInTheDocument();
   });
 });

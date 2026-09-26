@@ -1,30 +1,33 @@
-import { usePostNotices } from "@/api/fetch/admin";
-import { useDeleteS3, usePostS3 } from "@/api/fetch/s3";
+import { usePostNotices, usePutNoticeDraft } from "@/api/fetch/admin";
 import { NoticeWriteFormValues } from "../_types/NoticeWriteType";
+import { useUploadNoticeImages } from "./useUploadNoticeImages";
 
-const useSubmitNotice = () => {
-  const { mutate: postNotice } = usePostNotices();
-  const { mutate: postS3 } = usePostS3();
-  const { mutate: deleteS3 } = useDeleteS3();
+/**
+ * 공지를 발행한다. 임시저장본을 이어 쓰는 중이면(`draftId`) 그 공지를 발행 상태로 바꾸고,
+ * 아니면 새 공지를 만든다.
+ */
+const useSubmitNotice = (draftId: number | null) => {
+  const { mutate: postNotice, isPending: isPosting } = usePostNotices();
+  const { mutate: publishDraft, isPending: isPublishing } = usePutNoticeDraft(draftId);
+  const { uploadImages, isUploading } = useUploadNoticeImages();
 
   const submitNotice = (data: NoticeWriteFormValues) => {
-    const { images, ...rest } = data;
-    const files = images.map((i) => i.file).filter((f): f is File => f != null);
+    const { images, category, ...rest } = data;
 
-    const submitNotice = (imageUrls: string[]) =>
-      postNotice(
-        { ...rest, imageUrls },
-        { onError: () => imageUrls.length > 0 && deleteS3(imageUrls) }
-      );
+    uploadImages(images, (imageUrls, rollbackUploads) => {
+      if (draftId) {
+        publishDraft(
+          { ...rest, category: category || undefined, imageUrls, draft: false },
+          { onError: rollbackUploads }
+        );
+        return;
+      }
 
-    if (files.length === 0) return submitNotice([]);
-
-    const formData = new FormData();
-    files.forEach((f) => formData.append("image", f));
-    postS3(formData, { onSuccess: ({ result }) => submitNotice(result) });
+      postNotice({ ...rest, category, imageUrls }, { onError: rollbackUploads });
+    });
   };
 
-  return { submitNotice };
+  return { submitNotice, isPending: isPosting || isPublishing || isUploading };
 };
 
 export default useSubmitNotice;

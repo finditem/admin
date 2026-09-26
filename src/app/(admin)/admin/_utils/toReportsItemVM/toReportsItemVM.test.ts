@@ -30,6 +30,14 @@ describe("toReportItemVM", () => {
   });
 });
 
+describe("toReportItemVM 신고자 ID", () => {
+  it("reporterId가 있으면 상세 주소에 userId 쿼리를 붙임", () => {
+    const item = { reportId: 1, reporterId: 42, reportType: "DUPLICATE" } as any;
+
+    expect(toReportItemVM(item).href).toBe("/admin/reports/report/1?userId=42");
+  });
+});
+
 describe("toInquiryItemVM", () => {
   it("문의 매핑", () => {
     const item = {
@@ -53,6 +61,14 @@ describe("toInquiryItemVM", () => {
       processStatus: ProcessStatusBadgeConfig.ANSWERED,
       answerStatus: ReplyStatusBadgeConfig(true),
     });
+  });
+});
+
+describe("toInquiryItemVM 문의자 ID", () => {
+  it("userId가 있으면 상세 주소에 userId 쿼리를 붙임", () => {
+    const item = { inquiryId: 10, userId: 7 } as any;
+
+    expect(toInquiryItemVM(item).href).toBe("/admin/reports/inquiry/10?userId=7");
   });
 });
 

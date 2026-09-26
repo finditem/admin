@@ -85,6 +85,45 @@ test.describe("관리자 공지사항 글쓰기 페이지 (/admin/notice/write)"
     await expect(page.getByPlaceholder("내용을 입력해 주세요.")).toBeVisible();
   });
 
+  test("임시저장한 공지가 있으면 불러오기를 물어보고, 불러오면 폼을 채운다", async ({ page }) => {
+    await page.route("**/api/auth/refresh", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(MOCK_AUTH_REFRESH),
+      })
+    );
+    await page.route("**/api/admin/notices/draft", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          isSuccess: true,
+          code: "COMMON200",
+          message: "성공",
+          result: {
+            noticeId: 77,
+            title: "임시저장 제목",
+            content: "임시저장 내용",
+            category: "GENERAL",
+            pinned: false,
+            images: [],
+            createdAt: "2026-09-26T10:00:00",
+            updatedAt: "2026-09-26T10:00:00",
+          },
+        }),
+      })
+    );
+
+    await page.goto("/admin/notice/write");
+
+    await expect(page.getByText("임시저장한 공지가 있어요")).toBeVisible();
+    await page.getByRole("button", { name: "불러오기" }).click();
+
+    await expect(page.getByPlaceholder("제목을 입력해 주세요.")).toHaveValue("임시저장 제목");
+    await expect(page.getByPlaceholder("내용을 입력해 주세요.")).toHaveValue("임시저장 내용");
+  });
+
   test("필수 필드 미입력 시 등록 버튼이 비활성화된다", async ({ page }) => {
     await page.route("**/api/auth/refresh", (route) =>
       route.fulfill({

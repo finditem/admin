@@ -20,3 +20,13 @@ export { usePutInquiryStatus } from "./api/usePutInquiryStatus";
 export { usePostReportComments } from "./api/usePostReportComments";
 export { usePutNoticeDetail } from "./api/usePutNoticeDetail";
 export { useGetMarketingPosts } from "./api/useGetMarketingPosts";
+export * from "./types/NoticeDraftType";
+export * from "./types/UserDetailType";
+
+export { usePostGuestInquiryReply } from "./api/usePostGuestInquiryReply";
+export { usePostInquiryBlockIp } from "./api/usePostInquiryBlockIp";
+export { useDeleteNotice } from "./api/useDeleteNotice";
+export { useGetNoticeDraft } from "./api/useGetNoticeDraft";
+export { usePostNoticeDraft } from "./api/usePostNoticeDraft";
+export { usePutNoticeDraft } from "./api/usePutNoticeDraft";
+export { useGetUserDetail } from "./api/useGetUserDetail";
