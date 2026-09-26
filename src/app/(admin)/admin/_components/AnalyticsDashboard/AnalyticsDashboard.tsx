@@ -6,12 +6,12 @@ import {
 } from "../../_utils/fetchAnalyticsReport/fetchAnalyticsReport";
 import { getServiceUrl } from "@/utils";
 import {
-  AnalyticsNotice,
   AnalyticsRangeTabs,
   AnalyticsRankList,
   AnalyticsSummaryCards,
   VisitorsBarChart,
 } from "./_internal";
+import AdminNotice from "../AdminNotice/AdminNotice";
 
 interface AnalyticsDashboardProps {
   /** `?range=` 쿼리 값. 목록에 없는 값이면 기본 기간을 쓴다. */
@@ -136,7 +136,7 @@ const AnalyticsDashboard = async ({ rangeParam, basePath }: AnalyticsDashboardPr
   let content;
   if (!hasAnalyticsConfig()) {
     content = (
-      <AnalyticsNotice
+      <AdminNotice
         title="GA 연결 설정이 필요해요"
         description="서버 환경 변수 GA_PROPERTY_ID, GA_CLIENT_EMAIL, GA_PRIVATE_KEY를 등록하면 통계가 표시돼요."
       />
@@ -149,7 +149,7 @@ const AnalyticsDashboard = async ({ rangeParam, basePath }: AnalyticsDashboardPr
     } catch (error) {
       console.error("[analytics] GA 조회 실패", error);
       content = (
-        <AnalyticsNotice
+        <AdminNotice
           title="통계를 불러오지 못했어요"
           description="GA 서비스 계정 권한과 환경 변수를 확인해 주세요."
         />
@@ -162,7 +162,8 @@ const AnalyticsDashboard = async ({ rangeParam, basePath }: AnalyticsDashboardPr
       <div className="flex flex-col gap-3">
         <AnalyticsRangeTabs range={range} basePath={basePath} />
         <p className="text-caption1-regular text-layout-body-default">
-          운영 앱의 Google Analytics 기준이며 10분마다 갱신돼요. 증감은 {previousLabel}과 비교한 값이에요.
+          운영 앱의 Google Analytics 기준이며 10분마다 갱신돼요. 증감은 {previousLabel}과 비교한
+          값이에요.
         </p>
       </div>
       {content}
