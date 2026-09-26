@@ -45,7 +45,7 @@ const AdminSectionNavItem = ({ label, items, footer }: AdminSectionNavItemProps)
     pathname !== null && (pathname === href || pathname.startsWith(`${href}/`));
 
   return (
-    <section aria-label={label} className="flex flex-col gap-[2px] px-5 py-6 pc:py-4">
+    <section aria-label={label} className="flex flex-col gap-[2px] px-5 py-6 pc:py-3">
       <h2 className="text-body2-regular text-layout-body-default">{label}</h2>
 
       <ul>
@@ -54,7 +54,7 @@ const AdminSectionNavItem = ({ label, items, footer }: AdminSectionNavItemProps)
             <Link
               href={href}
               aria-current={isCurrent(href) ? "page" : undefined}
-              className="group flex items-center justify-between py-[10px] pc:-mx-3 pc:rounded-[10px] pc:px-3 pc:transition-colors pc:hover:bg-flatGray-25 pc:aria-[current=page]:bg-fill-brand-subtle-default"
+              className="group flex items-center justify-between py-[10px] pc:-mx-3 pc:py-2 pc:rounded-[10px] pc:px-3 pc:transition-colors pc:hover:bg-flatGray-25 pc:aria-[current=page]:bg-fill-brand-subtle-default"
             >
               <span className="text-body1-semibold text-neutral-strong-default pc:group-aria-[current=page]:text-brand-normal-default">
                 {title}
