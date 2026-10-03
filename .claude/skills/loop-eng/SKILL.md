@@ -8,7 +8,7 @@ description: 목표와 완료 조건을 먼저 정하고, 구현→검증→수�
 ## 0. 시작 전
 
 - 워크트리에서 작업한다. 워크트리는 `.claude/worktrees/` 아래에 만든다. 다른 세션의 브랜치나 워크트리를 발견하면 먼저 사용자에게 묻는다.
-- 새 워크트리에는 gitignore 대상 파일이 없으므로 메인 체크아웃에서 `.env` 계열과 `next-env.d.ts`를 복사하고 `pnpm install`을 먼저 한다.
+- 새 워크트리에는 gitignore 대상 파일이 없다. `.env` 계열은 Claude가 다룰 수 없으므로 preview 워크트리는 `.claude/scripts/new-preview-worktree.sh`로 만들고(스크립트가 복사한다), 그 밖의 워크트리는 사용자에게 복사를 요청한다. 그다음 `pnpm install`을 먼저 한다.
 - 목표 1줄과 체크할 수 있는 완료 조건을 적고 사용자 확인을 받는다.
 - 최대 반복 횟수를 정한다 (기본 5).
 - 특정 라우트 하나에 국한된 작업이면 `plan-route` 스킬로 `_docs/plan.md`를 먼저 잡는다.
