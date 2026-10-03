@@ -89,6 +89,18 @@ src/
 3. 로컬 `git commit`은 응답 흐름에 맞춰 자율적으로 수행할 수 있다. 단, 이번 응답에서 Claude가 Edit/Write로 직접 건드린 파일만 `git add`한다 (`git add -A`/`git add .` 금지). 커밋 직전 `git status`로 staging 대상이 의도한 파일과 정확히 일치하는지 확인한다.
 4. `git push`, PR 생성 등 원격 저장소에 영향을 주는 작업은 사용자가 명시적으로 요청하기 전에는 수행하지 않는다. force-push는 요청 여부와 관계없이 수행하지 않는다.
 
+## 최신화
+
+작업을 시작하기 전과 끝낸 뒤에 각각 원격 `preview`의 최신 내용을 받는다. 다른 사람이 먼저 반영한 변경과 어긋난 채로 작업하거나, 충돌을 PR 단계에서야 발견하지 않기 위해서다.
+
+- 작업 시작 전에 `git fetch origin --prune`을 실행한다.
+  - 새 작업은 최신 `origin/preview`에서 워크트리를 만든다. `new-preview-worktree.sh`는 이 fetch를 스스로 한다.
+  - 기존 워크트리에서 이어서 작업할 때는 워킹트리가 깨끗한지 확인한 뒤 그 워크트리에서 `git merge origin/preview`로 최신 내용을 합친다.
+- 작업을 끝낸 뒤, 커밋을 보고하거나 PR을 만들기 전에 다시 `git fetch origin --prune`과 `git merge origin/preview`를 실행해 충돌이 없는지 확인한다.
+- 메인 워킹 디렉토리의 `preview`도 작업 시작 전과 끝낸 뒤에 `git -C <저장소 루트> pull --ff-only origin preview`로 맞춘다. 메인에 커밋되지 않은 변경이 있거나 fast-forward가 안 되면 건드리지 않고 사용자에게 알린다.
+- 이미 push한 브랜치를 rebase하면 force push가 필요해지므로 최신화는 rebase가 아니라 merge로 한다.
+- merge에서 충돌이 나면 임의로 해결하지 말고 충돌한 파일과 양쪽 변경 내용을 사용자에게 보여주고 어떻게 합칠지 확인받는다.
+
 ## PR 생성
 
 사용자가 PR 생성을 요청하면 `create-pr` 스킬을 실행한다. `gh pr create` 실행 자체는 항상 사용자 확인 후 진행한다 (위 4번 규칙).
