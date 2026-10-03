@@ -15,7 +15,7 @@
 //   그 워크트리의 브랜치가 preview/로 시작하지 않으면 막는다. 메인 워킹 디렉토리는 항상 막는다.
 // - 저장소의 .claude/hooks, .claude/scripts, .claude/settings.json은 워크트리 안이라도 막는다.
 // - Bash의 git commit, merge, rebase, reset, cherry-pick은 preview/ 워크트리 안에서만 허용한다.
-// - git push는 preview/ 브랜치로만 허용하고, force push와 develop, main으로의 push, gh pr merge는 막는다.
+// - git push는 preview/ 브랜치로만 허용하고, force push와 preview, main으로의 push, gh pr merge는 막는다.
 //
 // 저장소 밖의 파일(스크래치패드, 메모리 등)은 검사하지 않는다.
 
@@ -116,7 +116,8 @@ if (tool === 'Bash') {
 
   if (/\bgit\s+(-C\s+\S+\s+)?push\b/.test(command)) {
     if (/\s(--force\S*|-f|--mirror|--delete|-d)\b|\s\+\S/.test(command)) block('강제 push와 브랜치 삭제는 할 수 없습니다.');
-    if (/\b(develop|main|master)\b/.test(command)) block('develop, main으로는 push할 수 없습니다.');
+    // preview/<작업-이름>은 허용해야 하므로 preview 뒤에 /가 붙지 않은 경우만 막는다.
+    if (/\b(main|master)\b|(^|[\s:])preview(?=\s|$)/.test(command)) block('preview, main으로는 push할 수 없습니다.');
     const location = checkLocation(runDir);
     if (location.error) block(location.error);
   }
