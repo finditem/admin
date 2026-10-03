@@ -22,12 +22,12 @@
 
 ### 2. 작업은 `.claude/worktrees` 아래 preview 브랜치 워크트리에서만 한다
 
-이 저장소는 비개발자도 Claude로 작업한다. 메인 워킹 디렉토리나 `develop`에서 바로 고치지 않도록 다음 순서를 반드시 지킨다.
+이 저장소는 비개발자도 Claude로 작업한다. 메인 워킹 디렉토리나 `preview`에서 바로 고치지 않도록 다음 순서를 반드시 지킨다.
 
-1. 파일을 고치기 전에 `bash .claude/scripts/new-preview-worktree.sh <작업-이름>`을 실행한다. 작업 이름은 영문 소문자와 하이픈으로 짓는다(예: `notice-banner-text`). 스크립트가 최신 `origin/develop`에서 `preview/<작업-이름>` 브랜치를 만들어 `.claude/worktrees/<작업-이름>/`에 체크아웃하고, 필요한 설정 파일을 복사한다.
+1. 파일을 고치기 전에 `bash .claude/scripts/new-preview-worktree.sh <작업-이름>`을 실행한다. 작업 이름은 영문 소문자와 하이픈으로 짓는다(예: `notice-banner-text`). 스크립트가 최신 `origin/preview`에서 `preview/<작업-이름>` 브랜치를 만들어 `.claude/worktrees/<작업-이름>/`에 체크아웃하고, 필요한 설정 파일을 복사한다.
 2. 이후 모든 수정과 명령은 그 워크트리 경로 안에서 한다. 같은 작업을 이어서 할 때는 기존 워크트리를 쓰고 새로 만들지 않는다.
 3. 화면 확인이 필요하면 사용자에게 그 워크트리 경로에서 `pnpm dev`를 직접 실행해 달라고 안내한다.
-4. 커밋과 push는 사용자에게 무엇을 바꿨는지 설명하고 허락을 받은 뒤에 한다. push는 `preview/` 브랜치로만 하고, `develop`과 `main`으로 push하거나 force push하거나 PR을 머지하지 않는다. `develop` 반영은 개발자가 PR 리뷰를 거쳐 한다.
+4. 커밋과 push는 사용자에게 무엇을 바꿨는지 설명하고 허락을 받은 뒤에 한다. push는 `preview/` 브랜치로만 하고, `preview`와 `main`으로 push하거나 force push하거나 PR을 머지하지 않는다. `preview` 반영은 개발자가 PR 리뷰를 거쳐 한다.
 5. 비개발자에게 설명할 때는 git 용어를 줄이고, 무엇이 바뀌었는지와 어디서 확인하면 되는지를 먼저 말한다.
 
 막는 훅은 `.claude/hooks/guard-preview-branch.mjs`다. 개발자는 개인 파일인 `.claude/settings.local.json`에 `{"env": {"FI_ADMIN_DEVELOPER": "1"}}`을 넣어 이 훅만 끄고 `feat/`, `fix/` 등 기존 브랜치 흐름으로 작업할 수 있다. 이 훅이 켜진 상태에서는 `.claude/hooks`, `.claude/scripts`, `.claude/settings.json`도 수정할 수 없다.
