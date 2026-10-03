@@ -1,12 +1,8 @@
 # FI-ADMIN
 
-[찾아줘!](https://www.finditem.kr/) 서비스의 관리자 페이지 프론트엔드. 운영 앱(`finditem/FI-FE`)의 `/admin` 라우트를 별도 저장소로 분리한 Next.js 15(App Router) 단일 앱이다.
+[찾아줘!](https://www.finditem.kr/) 서비스의 관리자 페이지 프론트엔드다. 운영 앱(`finditem/FI-FE`)의 `/admin` 라우트를 별도 저장소로 분리한 Next.js 15(App Router) 단일 앱이며, 운영 주소는 https://a.finditem.kr 이다.
 
-## 주소
-
-- 운영 어드민: https://a.finditem.kr
-- 개발 서버 API 문서(Swagger): https://dev-api.finditem.kr/swagger-ui/index.html
-- 같은 문서의 OpenAPI JSON은 인증 없이 `https://dev-api.finditem.kr/v3/api-docs`로 받을 수 있다. 서버가 내려주는 필드는 FE 타입만 보지 말고 여기서 확인한다.
+스택은 Next.js 15, React 19, TypeScript 5, Tailwind CSS 3, Jest(단위), Playwright(e2e), pnpm이다. 운영 앱과 달리 next-intl, Sentry, PWA, Capacitor, MSW, Storybook, ESLint는 넣지 않았다.
 
 ## 절대 규칙
 
@@ -32,14 +28,6 @@
 
 막는 훅은 `.claude/hooks/guard-preview-branch.mjs`다. 개발자는 개인 파일인 `.claude/settings.local.json`에 `{"env": {"FI_ADMIN_DEVELOPER": "1"}}`을 넣어 이 훅만 끄고 `feat/`, `fix/` 등 기존 브랜치 흐름으로 작업할 수 있다. 이 훅이 켜진 상태에서는 `.claude/hooks`, `.claude/scripts`, `.claude/settings.json`도 수정할 수 없다.
 
-## 스택
-
-- Next.js 15 / React 19 / TypeScript 5 (`next.config.ts`에서 `reactCompiler: true` — React Compiler 활성화)
-- Tailwind CSS 3 (디자인 토큰은 `src/utils/tokens/tailwind.config.js`, FI-DS에서 생성된 값)
-- 테스트: Jest(단위), Playwright(e2e, `tests/e2e`). e2e는 API를 `page.route`로 흉내 내고 `src/mock/data`의 목데이터를 쓴다.
-- 패키지 매니저: pnpm(`package.json`의 `packageManager`). npm과 npx 대신 `pnpm add`, `pnpm exec`를 쓴다.
-- 운영 앱과 달리 next-intl, Sentry, PWA, Capacitor, MSW, Storybook, ESLint는 넣지 않았다. 어드민은 한국어 전용이므로 문구는 번역 함수 없이 한국어로 작성한다.
-
 ## 구조
 
 ```
@@ -55,64 +43,97 @@ src/
   mock/
 ```
 
-- 계정 권한(role)별 영역은 `src/app`의 라우트 그룹 하나로 묶고, `src/constants/ROLE_AREAS.ts`에 권한과 첫 화면을 등록한다. 미들웨어가 이 목록으로 접근을 검사하고 로그인 후 이동할 곳을 정한다. B2B 같은 영역을 추가할 때도 같은 방식을 따르며, 모노레포로 나누지 않는다.
-- 게시글 상세, 공지 상세, 비밀번호 변경처럼 운영 앱에만 있는 화면으로 연결할 때는 `getServiceUrl`로 절대 주소를 만든다.
-- 라우트 전용 코드는 해당 라우트 폴더 하위 `_components`/`_hooks`/`_types`/`_utils`(private 폴더)에 둔다. 여러 라우트에서 재사용되면 그때 `src/components`, `src/hooks` 등 전역 폴더로 올린다.
-- `hooks/`, `store/`, `utils/`는 도메인별로 묶지 않고, 함수/훅 하나당 폴더 하나(`utils/cn/`, `hooks/useLogout/` 등)로 세분화하는 컨벤션이다. 새 유틸/훅을 추가할 때도 이 패턴을 따른다.
-- `_components` 하위 컴포넌트도 동일하게 컴포넌트 하나당 폴더 하나. 그 컴포넌트 내부에서만 쓰는 하위 조각은 `_internal` 폴더에 둔다.
-- 운영 앱에서 코드를 옮겨올 때도 위 구조를 그대로 따른다. `useTranslations`를 쓰던 공통 컴포넌트는 한국어 문구로 바꿔 넣는다.
+<important if="빌드, 테스트, 타입체크를 실행하거나 패키지를 설치할 때">
 
-## 커밋 컨벤션 (commitlint 강제)
+패키지 매니저는 pnpm이다. npm과 npx 대신 `pnpm add`, `pnpm exec`를 쓴다.
 
-- type: `feat`, `fix`, `docs`, `hotfix`, `refactor`, `test`, `chore`, `rename`, `asset`, `design`, `a11y` 중 하나
-- scope 필수 (비워두면 커밋 실패)
-- 예: `feat(report): 신고 목록 필터 추가`
+| 명령 | 용도 |
+|---|---|
+| `pnpm test` | Jest 단위 테스트 |
+| `pnpm build` | 프로덕션 빌드(타입체크 포함). `pnpm test`와 함께 기본 검증이다 |
+| `pnpm exec tsc --noEmit` | 타입만 확인할 때 `pnpm build` 대신 쓴다 |
+| `CI=1 E2E_PORT=3918 pnpm test:e2e` | `pnpm build` 뒤에 실행하는 e2e. `CI`를 주면 빌드 결과로 서버를 띄우고, 포트를 바꿔 dev 서버와 겹치지 않게 한다 |
+| `pnpm dev` | 사용자가 이미 띄워 둔 상태라고 가정한다. Claude는 직접 실행하지 않는다 |
 
-## 검증 커맨드
+dev 서버가 켜져 있을 때 `pnpm build`를 돌리면 같은 `.next`를 덮어써 dev 런타임이 깨진다.
+</important>
 
-- 기본: `pnpm test` + `pnpm build` (타입체크 포함). 대부분의 회귀를 이 둘로 잡는다.
-- e2e: `pnpm build` 뒤 `CI=1 E2E_PORT=3918 pnpm test:e2e`. `CI`를 주면 dev 서버 대신 빌드 결과로 서버를 띄우고, 포트를 바꿔 켜 둔 dev 서버와 겹치지 않게 한다.
-- 타입만 확인하면 되는 경우는 `pnpm exec tsc --noEmit`으로 대신한다. dev 서버가 켜져 있을 때 `pnpm build`를 돌리면 같은 `.next`를 덮어써 dev 런타임이 깨진다.
+<important if="작업을 시작하기 전이거나, 작업을 끝내고 커밋을 보고하거나 PR을 만들기 전">
 
-## 텍스트 작성 원칙
+다른 사람이 먼저 반영한 변경과 어긋나거나 충돌을 PR 단계에서야 발견하지 않도록 원격 `preview`의 최신 내용을 받는다.
 
-커밋 메시지, PR 본문, 코드 주석 등 Claude가 작성하는 모든 텍스트 산출물은 온전한 문장으로만 작성하고 이모티콘을 사용하지 않는다.
-
-## React Compiler와 메모이제이션
-
-이 프로젝트는 React Compiler가 켜져 있다(`next.config.ts`의 `reactCompiler: true`). 컴포넌트/훅 내부에서 `useMemo`, `useCallback`을 수동으로 작성하지 않는다 — 컴파일러가 자동으로 처리한다. 새 훅이나 컴포넌트를 작성할 때도, 기존 코드를 참고해 복사할 때도 이 패턴을 넣지 않는다. 외부 라이브러리 API가 메모이즈된 함수/값을 명시적으로 요구하는 경우처럼 컴파일러가 커버하지 못하는 예외적 상황에서만 사용하고, 그 경우 왜 필요한지 주석으로 남긴다.
-
-## 표준 작업 흐름
-
-1. 기존 코드 패턴과 디렉토리 구조를 그대로 따른다. 새 추상화나 새로운 디렉토리 규칙을 임의로 만들지 않는다.
-2. `pnpm dev`는 사용자가 이미 띄워서 켜둔 상태라고 가정한다. Claude가 직접 실행하지 않는다 — 장기 실행 프로세스라 포트 충돌이나 좀비 프로세스를 남길 수 있다.
-3. 로컬 `git commit`은 응답 흐름에 맞춰 자율적으로 수행할 수 있다. 단, 이번 응답에서 Claude가 Edit/Write로 직접 건드린 파일만 `git add`한다 (`git add -A`/`git add .` 금지). 커밋 직전 `git status`로 staging 대상이 의도한 파일과 정확히 일치하는지 확인한다.
-4. `git push`, PR 생성 등 원격 저장소에 영향을 주는 작업은 사용자가 명시적으로 요청하기 전에는 수행하지 않는다. force-push는 요청 여부와 관계없이 수행하지 않는다.
-
-## 최신화
-
-작업을 시작하기 전과 끝낸 뒤에 각각 원격 `preview`의 최신 내용을 받는다. 다른 사람이 먼저 반영한 변경과 어긋난 채로 작업하거나, 충돌을 PR 단계에서야 발견하지 않기 위해서다.
-
-- 작업 시작 전에 `git fetch origin --prune`을 실행한다.
-  - 새 작업은 최신 `origin/preview`에서 워크트리를 만든다. `new-preview-worktree.sh`는 이 fetch를 스스로 한다.
-  - 기존 워크트리에서 이어서 작업할 때는 워킹트리가 깨끗한지 확인한 뒤 그 워크트리에서 `git merge origin/preview`로 최신 내용을 합친다.
-- 작업을 끝낸 뒤, 커밋을 보고하거나 PR을 만들기 전에 다시 `git fetch origin --prune`과 `git merge origin/preview`를 실행해 충돌이 없는지 확인한다.
-- 메인 워킹 디렉토리의 `preview`도 작업 시작 전과 끝낸 뒤에 `git -C <저장소 루트> pull --ff-only origin preview`로 맞춘다. 메인에 커밋되지 않은 변경이 있거나 fast-forward가 안 되면 건드리지 않고 사용자에게 알린다.
-- 이미 push한 브랜치를 rebase하면 force push가 필요해지므로 최신화는 rebase가 아니라 merge로 한다.
+- `git fetch origin --prune`을 실행한다. 새 작업은 최신 `origin/preview`에서 워크트리를 만든다(`new-preview-worktree.sh`는 이 fetch를 스스로 한다).
+- 기존 워크트리에서 이어서 작업하거나 작업을 끝냈을 때는 워킹트리가 깨끗한지 확인한 뒤 그 워크트리에서 `git merge origin/preview`로 합친다.
+- 메인 워킹 디렉토리의 `preview`도 `git -C <저장소 루트> pull --ff-only origin preview`로 맞춘다. 커밋되지 않은 변경이 있거나 fast-forward가 안 되면 건드리지 않고 사용자에게 알린다.
+- 이미 push한 브랜치를 rebase하면 force push가 필요해지므로 rebase가 아니라 merge로 한다.
 - merge에서 충돌이 나면 임의로 해결하지 말고 충돌한 파일과 양쪽 변경 내용을 사용자에게 보여주고 어떻게 합칠지 확인받는다.
+</important>
 
-## PR 생성
+<important if="page.tsx가 있는 라우트 하나에 국한된 작업을 시작할 때">
+- 구현 전에 `plan-route` 스킬을 실행한다. 라우트 폴더의 `_docs/plan.md`에 작업 항목을 todo 체크리스트로 기록하고 진행에 따라 갱신해, 세션이 끊겨도 다음 세션이나 다른 팀원이 이어받을 수 있게 한다.
+- 여러 라우트에 걸친 작업이나 전역 공통 코드(`src/components`, `src/hooks` 등) 작업에는 적용하지 않는다.
+</important>
 
-사용자가 PR 생성을 요청하면 `create-pr` 스킬을 실행한다. `gh pr create` 실행 자체는 항상 사용자 확인 후 진행한다 (위 4번 규칙).
+<important if="새 파일이나 폴더를 만들거나 코드를 다른 위치로 옮길 때">
+- 새 추상화나 새로운 디렉토리 규칙을 임의로 만들지 않는다.
+- 라우트 전용 코드는 해당 라우트 폴더 하위 `_components`/`_hooks`/`_types`/`_utils`(private 폴더)에 둔다. 여러 라우트에서 재사용되면 그때 `src/components`, `src/hooks` 등 전역 폴더로 올린다.
+- `hooks/`, `store/`, `utils/`는 도메인별로 묶지 않고 함수/훅 하나당 폴더 하나(`utils/cn/`, `hooks/useLogout/` 등)로 나눈다.
+- `_components` 하위 컴포넌트도 컴포넌트 하나당 폴더 하나다. 그 컴포넌트 내부에서만 쓰는 하위 조각은 `_internal` 폴더에 둔다.
+</important>
 
-기능 개발과 테스트 코드는 PR을 나눠서 올린다.
+<important if="운영 앱(finditem/FI-FE)에서 코드를 옮겨올 때">
+- 이 저장소의 구조 규칙을 그대로 따른다.
+- `useTranslations`를 쓰던 공통 컴포넌트는 한국어 문구로 바꿔 넣는다.
+</important>
 
-- 기능 PR에는 기능 코드만 담고, 단위 테스트(Jest)와 e2e 테스트(`tests/e2e`) 추가나 수정은 별도의 `test` 타입 PR로 올린다.
+<important if="화면에 보이는 문구를 추가하거나 수정할 때">
+- 어드민은 한국어 전용이다. 번역 함수 없이 한국어로 직접 작성한다.
+</important>
+
+<important if="React 컴포넌트나 훅을 작성하거나 수정할 때">
+- React Compiler가 켜져 있다(`next.config.ts`의 `reactCompiler: true`). `useMemo`, `useCallback`을 수동으로 작성하지 않고, 기존 코드를 복사할 때도 넣지 않는다.
+- 외부 라이브러리 API가 메모이즈된 값을 명시적으로 요구하는 경우처럼 컴파일러가 커버하지 못할 때만 쓰고, 그 이유를 주석으로 남긴다.
+</important>
+
+<important if="스타일, 색상, 간격 등 Tailwind 클래스를 다룰 때">
+- 디자인 토큰은 FI-DS에서 생성된 `src/utils/tokens/tailwind.config.js`에 있다.
+</important>
+
+<important if="API 요청이나 응답 타입을 다루거나 서버가 내려주는 필드를 확인해야 할 때">
+- FE 타입만 보고 판단하지 않는다. 개발 서버 OpenAPI JSON을 인증 없이 `https://dev-api.finditem.kr/v3/api-docs`에서 받아 확인한다. 사람이 볼 문서는 https://dev-api.finditem.kr/swagger-ui/index.html 이다.
+</important>
+
+<important if="계정 권한(role)별 영역을 추가하거나 로그인 후 이동, 접근 제어를 다룰 때">
+- 권한별 영역은 `src/app`의 라우트 그룹 하나로 묶고, `src/constants/ROLE_AREAS.ts`에 권한과 첫 화면을 등록한다. 미들웨어가 이 목록으로 접근을 검사하고 로그인 후 이동할 곳을 정한다.
+- B2B 같은 영역을 추가할 때도 같은 방식을 따르며 모노레포로 나누지 않는다.
+</important>
+
+<important if="게시글 상세, 공지 상세, 비밀번호 변경처럼 운영 앱에만 있는 화면으로 연결할 때">
+- `getServiceUrl`로 절대 주소를 만든다.
+</important>
+
+<important if="테스트를 작성하거나 수정할 때">
+- e2e(`tests/e2e`)는 API를 `page.route`로 흉내 내고 `src/mock/data`의 목데이터를 쓴다.
+</important>
+
+<important if="커밋 메시지, PR 본문, 코드 주석을 작성할 때">
+- 온전한 문장으로만 작성하고 이모티콘을 사용하지 않는다.
+</important>
+
+<important if="git commit을 할 때">
+- 메시지 형식은 husky의 commit-msg 훅에서 commitlint가 검사한다. 허용 type과 scope 필수 규칙은 `commitlint.config.cjs`를 본다. 예: `feat(report): 신고 목록 필터 추가`
+- 로컬 커밋은 응답 흐름에 맞춰 자율적으로 할 수 있다. 단, 이번 응답에서 Claude가 Edit/Write로 직접 건드린 파일만 `git add`한다(`git add -A`/`git add .` 금지). 커밋 직전 `git status`로 staging 대상이 의도한 파일과 정확히 일치하는지 확인한다.
+</important>
+
+<important if="git push, PR 생성 등 원격 저장소에 영향을 주는 작업을 할 때">
+- 사용자가 명시적으로 요청하기 전에는 하지 않는다. force push는 요청 여부와 관계없이 하지 않는다.
+- PR 생성을 요청받으면 `create-pr` 스킬을 실행한다. `gh pr create` 실행 자체는 항상 사용자 확인 후 진행한다.
+</important>
+
+<important if="PR을 만들거나 기능과 테스트를 함께 고친 작업을 정리할 때">
+- 기능 PR에는 기능 코드만 담고, 단위 테스트(Jest)와 e2e 테스트 추가나 수정은 별도의 `test` 타입 PR로 올린다.
 - 두 PR은 브랜치도 따로 만든다. 테스트 PR은 기능 브랜치에서 갈라 만들고, 본문에 대상 기능 PR 번호를 적는다.
-- 기능 변경 때문에 기존 테스트가 깨져 그대로 두면 CI가 실패하는 경우에도 테스트 수정은 테스트 PR로 분리하고, 기능 PR 본문에 깨지는 테스트와 테스트 PR 번호를 밝힌다.
+- 기능 변경 때문에 기존 테스트가 깨져 CI가 실패하는 경우에도 테스트 수정은 테스트 PR로 분리하고, 기능 PR 본문에 깨지는 테스트와 테스트 PR 번호를 밝힌다.
 - 한 작업에서 기능과 테스트를 함께 고쳤다면 PR을 만들기 전에 사용자에게 어떻게 나눌지 보여주고 확인을 받는다.
-- PR 목록에서 바로 구분되도록 제목 맨 앞에 `[기능]` 또는 `[테스트]`를 붙이고, 본문의 `PR 종류` 섹션에서 해당 항목을 체크한다. 예: `[기능] feat: 신고 목록 필터 추가`, `[테스트] test: 신고 목록 필터 테스트 추가`.
-
-## 라우트 작업 계획
-
-특정 라우트(`page.tsx`가 있는 디렉토리) 하나에 국한된 작업을 시작하기 전에 `plan-route` 스킬을 실행한다. 해당 라우트 폴더의 `_docs/plan.md`에 작업 항목을 todo 체크리스트로 기록하고 진행에 따라 갱신해, 세션이 끊겨도 다음 세션이나 다른 팀원이 이어받을 수 있게 한다. 여러 라우트에 걸친 작업이나 전역 공통 코드(`src/components`, `src/hooks` 등) 작업에는 적용하지 않는다.
+- 제목 맨 앞에 `[기능]` 또는 `[테스트]`를 붙이고 본문의 `PR 종류` 섹션에서 해당 항목을 체크한다. 예: `[기능] feat: 신고 목록 필터 추가`, `[테스트] test: 신고 목록 필터 테스트 추가`.
+</important>
