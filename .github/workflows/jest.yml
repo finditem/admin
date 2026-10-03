@@ -2,7 +2,7 @@ name: CI - Jest
 
 on:
   pull_request:
-    branches: [develop]
+    branches: [preview]
 
 permissions:
   contents: read

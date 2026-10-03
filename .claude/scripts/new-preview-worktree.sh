@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# 최신 origin/develop에서 preview/<작업-이름> 브랜치를 만들고 .claude/worktrees/<작업-이름>/에
+# 최신 origin/preview에서 preview/<작업-이름> 브랜치를 만들고 .claude/worktrees/<작업-이름>/에
 # 워크트리로 체크아웃한다. 비개발자가 Claude로 작업을 시작할 때 Claude가 이 스크립트를 실행한다.
 #
 #   bash .claude/scripts/new-preview-worktree.sh notice-banner-text
@@ -29,8 +29,8 @@ if git -C "$root" show-ref --verify --quiet "refs/heads/$branch"; then
   exit 1
 fi
 
-git -C "$root" fetch --quiet origin develop
-git -C "$root" worktree add --quiet --no-track -b "$branch" "$dir" origin/develop
+git -C "$root" fetch --quiet origin preview
+git -C "$root" worktree add --quiet --no-track -b "$branch" "$dir" origin/preview
 
 copied=0
 for file in "$root"/.env* "$root/next-env.d.ts"; do
