@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 //
-// 비개발자가 Claude로 작업할 때 반드시 .claude/worktrees 아래의 preview/ 브랜치 워크트리에서만
+// 비개발자가 Claude로 작업할 때 반드시 .claude/worktrees 아래의 work/ 브랜치 워크트리에서만
 // 파일을 고치고 커밋하게 강제하는 PreToolUse 훅이다.
 //
 // 이 훅은 .claude/settings.json에 등록되어 있어 기본으로 켜져 있다. 개발자는 개인 파일인
@@ -12,10 +12,10 @@
 //
 // 막는 범위는 다음과 같다.
 // - 이 저장소 안의 파일을 Edit/Write할 때, 그 파일이 .claude/worktrees/<이름>/ 아래에 있고
-//   그 워크트리의 브랜치가 preview/로 시작하지 않으면 막는다. 메인 워킹 디렉토리는 항상 막는다.
+//   그 워크트리의 브랜치가 work/로 시작하지 않으면 막는다. 메인 워킹 디렉토리는 항상 막는다.
 // - 저장소의 .claude/hooks, .claude/scripts, .claude/settings.json은 워크트리 안이라도 막는다.
-// - Bash의 git commit, merge, rebase, reset, cherry-pick은 preview/ 워크트리 안에서만 허용한다.
-// - git push는 preview/ 브랜치로만 허용하고, force push와 develop, main으로의 push, gh pr merge는 막는다.
+// - Bash의 git commit, merge, rebase, reset, cherry-pick은 work/ 워크트리 안에서만 허용한다.
+// - git push는 work/ 브랜치로만 허용하고, force push와 preview, main으로의 push, gh pr merge는 막는다.
 //
 // 저장소 밖의 파일(스크래치패드, 메모리 등)은 검사하지 않는다.
 
@@ -26,9 +26,11 @@ import { fileURLToPath } from 'node:url';
 
 if (process.env.FI_ADMIN_DEVELOPER === '1') process.exit(0);
 
+// 작업 브랜치 이름 앞부분. 저장소에 preview 브랜치가 있어 git이 preview/<이름> 브랜치를 만들 수 없으므로 work/를 쓴다.
+const BRANCH_PREFIX = 'work/';
 
 const GUIDE =
-  '작업은 preview/ 브랜치 워크트리에서만 할 수 있습니다. 먼저 `bash .claude/scripts/new-preview-worktree.sh <영문-작업-이름>`을 실행해 ' +
+  '작업은 work/ 브랜치 워크트리에서만 할 수 있습니다. 먼저 `bash .claude/scripts/new-preview-worktree.sh <영문-작업-이름>`을 실행해 ' +
   '.claude/worktrees/<작업-이름>/ 워크트리를 만들고, 그 안의 파일만 수정하십시오.';
 
 const block = (reason) => {
@@ -67,13 +69,13 @@ const existingDir = (path) => {
   return realpathSync(dir);
 };
 
-// 주어진 디렉토리가 이 저장소의 preview/ 워크트리 안이면 그 워크트리 경로를, 아니면 이유를 돌려준다.
+// 주어진 디렉토리가 이 저장소의 work/ 워크트리 안이면 그 워크트리 경로를, 아니면 이유를 돌려준다.
 const checkLocation = (dir) => {
   if (!isInside(dir, WORKTREES)) return { error: '메인 워킹 디렉토리에서는 작업할 수 없습니다.' };
   const top = git(dir, 'rev-parse', '--show-toplevel');
   if (!top || realpathSync(top) === ROOT) return { error: '워크트리 밖입니다.' };
   const branch = git(dir, 'rev-parse', '--abbrev-ref', 'HEAD');
-  if (!branch.startsWith('preview/')) return { error: `현재 브랜치(${branch || '알 수 없음'})가 preview/로 시작하지 않습니다.` };
+  if (!branch.startsWith(BRANCH_PREFIX)) return { error: `현재 브랜치(${branch || '알 수 없음'})가 ${BRANCH_PREFIX}로 시작하지 않습니다.` };
   return { top: realpathSync(top), branch };
 };
 
@@ -116,7 +118,8 @@ if (tool === 'Bash') {
 
   if (/\bgit\s+(-C\s+\S+\s+)?push\b/.test(command)) {
     if (/\s(--force\S*|-f|--mirror|--delete|-d)\b|\s\+\S/.test(command)) block('강제 push와 브랜치 삭제는 할 수 없습니다.');
-    if (/\b(develop|main|master)\b/.test(command)) block('develop, main으로는 push할 수 없습니다.');
+    // preview 브랜치 자체로 가는 push만 막도록 preview 뒤에 공백이나 명령 끝이 오는 경우로 좁힌다.
+    if (/\b(main|master)\b|(^|[\s:])preview(?=\s|$)/.test(command)) block('preview, main으로는 push할 수 없습니다.');
     const location = checkLocation(runDir);
     if (location.error) block(location.error);
   }
