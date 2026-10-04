@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# 최신 origin/preview에서 preview/<작업-이름> 브랜치를 만들고 .claude/worktrees/<작업-이름>/에
+# 최신 origin/preview에서 work/<작업-이름> 브랜치를 만들고 .claude/worktrees/<작업-이름>/에
 # 워크트리로 체크아웃한다. 비개발자가 Claude로 작업을 시작할 때 Claude가 이 스크립트를 실행한다.
 #
 #   bash .claude/scripts/new-preview-worktree.sh notice-banner-text
@@ -18,7 +18,8 @@ fi
 
 root=$(cd "$(dirname "$0")/../.." && pwd)
 dir="$root/.claude/worktrees/$name"
-branch="preview/$name"
+# 저장소에 preview 브랜치가 있으면 git이 preview/<이름> 브랜치를 만들 수 없으므로 work/를 쓴다.
+branch="work/$name"
 
 if [ -e "$dir" ]; then
   echo "이미 있는 워크트리입니다: $dir" >&2
