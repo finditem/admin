@@ -49,6 +49,10 @@ test.describe("관리자 로그인 (/login)", () => {
 
     await expect(page).toHaveURL(/\/login\?reason=forbidden$/);
     await expect(page.getByText("관리자 권한이 있는 계정으로 로그인해 주세요.")).toBeVisible();
+
+    // 토큰은 운영 앱과 공유하므로 권한이 없어도 지우지 않는다.
+    const cookieNames = (await context.cookies()).map((cookie) => cookie.name);
+    expect(cookieNames).toEqual(expect.arrayContaining(["access_token", "refresh_token"]));
   });
 
   test("관리자 계정으로 로그인 화면에 접근하면 관리자 메인으로 이동한다", async ({
