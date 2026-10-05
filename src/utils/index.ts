@@ -14,3 +14,4 @@ export { applyFiltersToUrl } from "./applyFiltersToUrl/applyFiltersToUrl";
 export { getCategoryLabel } from "./getCategoryLabel/getCategoryLabel";
 export { getServiceUrl } from "./getServiceUrl/getServiceUrl";
 export { isValidCallbackUrl } from "./isValidCallbackUrl/isValidCallbackUrl";
+export { getAuthCookieDomain } from "./getAuthCookieDomain/getAuthCookieDomain";
