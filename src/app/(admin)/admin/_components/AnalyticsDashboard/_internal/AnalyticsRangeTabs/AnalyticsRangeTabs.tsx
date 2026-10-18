@@ -28,7 +28,7 @@ const AnalyticsRangeTabs = ({ range, basePath }: AnalyticsRangeTabsProps) => {
                 : "text-neutralInversed-normal-default bg-fill-neutralInversed-normal-default hover:text-black hover:bg-fill-neutralInversed-normal-hover"
             )}
           >
-            최근 {item.label}
+            {item.label}
           </Link>
         );
       })}
