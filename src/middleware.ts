@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { jwtDecode } from "jwt-decode";
 import { ROLE_AREAS } from "@/constants/ROLE_AREAS";
+import { getAuthCookieDomain } from "@/utils/getAuthCookieDomain/getAuthCookieDomain";
 
 interface JwtPayload {
   role?: string;
@@ -23,9 +24,10 @@ const getHomeByRole = (role: string | null) =>
 const findArea = (pathname: string) =>
   ROLE_AREAS.find((area) => pathname === area.home || pathname.startsWith(`${area.home}/`));
 
-const clearTokens = (response: NextResponse) => {
-  response.cookies.set("access_token", "", { path: "/", maxAge: 0 });
-  response.cookies.set("refresh_token", "", { path: "/", maxAge: 0 });
+const clearTokens = (request: NextRequest, response: NextResponse) => {
+  const domain = getAuthCookieDomain(request.headers.get("host"));
+  response.cookies.set("access_token", "", { path: "/", maxAge: 0, domain });
+  response.cookies.set("refresh_token", "", { path: "/", maxAge: 0, domain });
   return response;
 };
 
@@ -44,16 +46,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   };
 
-  // 권한이 없는 계정으로 로그인하면 토큰을 지우고 로그인 화면에 안내를 띄운다.
+  // 권한이 없는 계정이면 로그인 화면에 안내만 띄운다.
+  // 토큰은 운영 앱과 공유하므로 여기서 지우면 운영 앱 세션까지 끊긴다.
   const redirectForbidden = () => {
     const loginUrl = new URL(LOGIN_PATH, request.url);
     loginUrl.searchParams.set("reason", "forbidden");
-    return clearTokens(NextResponse.redirect(loginUrl));
+    return NextResponse.redirect(loginUrl);
   };
 
   if (pathname.startsWith(LOGIN_PATH)) {
     const reason = request.nextUrl.searchParams.get("reason");
-    if (reason === "session-expired") return clearTokens(NextResponse.next());
+    if (reason === "session-expired") return clearTokens(request, NextResponse.next());
     if (reason !== "forbidden" && accessToken && hasRefreshToken && home) return redirectTo(home);
     return NextResponse.next();
   }

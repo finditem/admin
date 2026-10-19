@@ -4,11 +4,13 @@ import {
   fetchAnalyticsReport,
   hasAnalyticsConfig,
 } from "../../_utils/fetchAnalyticsReport/fetchAnalyticsReport";
+import { getAnalyticsPeriods } from "../../_utils/getAnalyticsPeriods/getAnalyticsPeriods";
 import { getServiceUrl } from "@/utils";
 import {
   AnalyticsRangeTabs,
   AnalyticsRankList,
   AnalyticsSummaryCards,
+  ServiceStatisticsCards,
   VisitorsBarChart,
 } from "./_internal";
 import AdminNotice from "../AdminNotice/AdminNotice";
@@ -73,7 +75,40 @@ const AnalyticsCharts = ({
 
   return (
     <>
-      <AnalyticsSummaryCards summary={report.summary} previousLabel={previousLabel} />
+      <AnalyticsSummaryCards
+        sectionLabel="방문 요약"
+        previousLabel={previousLabel}
+        cards={[
+          {
+            key: "activeUsers",
+            label: "방문자",
+            help: "기간 중 한 번 이상 방문한 사용자",
+            current: report.summary.current.activeUsers,
+            previous: report.summary.previous.activeUsers,
+          },
+          {
+            key: "newUsers",
+            label: "신규 방문자",
+            help: "처음 방문한 사용자",
+            current: report.summary.current.newUsers,
+            previous: report.summary.previous.newUsers,
+          },
+          {
+            key: "sessions",
+            label: "방문 횟수",
+            help: "세션 수",
+            current: report.summary.current.sessions,
+            previous: report.summary.previous.sessions,
+          },
+          {
+            key: "pageViews",
+            label: "페이지뷰",
+            help: "조회한 화면 수",
+            current: report.summary.current.pageViews,
+            previous: report.summary.previous.pageViews,
+          },
+        ]}
+      />
 
       <div className="grid grid-cols-1 gap-10 pc:grid-cols-2 pc:gap-8">
         <VisitorsBarChart
@@ -130,8 +165,9 @@ const AnalyticsCharts = ({
 /** 운영 앱 GA 데이터를 보여주는 서비스 통계 대시보드입니다. 관리자 메인(PC)과 서비스 통계 화면에서 함께 씁니다. */
 const AnalyticsDashboard = async ({ rangeParam, basePath }: AnalyticsDashboardProps) => {
   const range = toRange(rangeParam);
-  const rangeLabel = ANALYTICS_RANGES.find((item) => item.value === range)?.label ?? "";
-  const previousLabel = `이전 ${rangeLabel}`;
+  const { previousLabel } =
+    ANALYTICS_RANGES.find((item) => item.value === range) ?? ANALYTICS_RANGES[0];
+  const periods = getAnalyticsPeriods(new Date(), range);
 
   let content;
   if (!hasAnalyticsConfig()) {
@@ -162,11 +198,35 @@ const AnalyticsDashboard = async ({ rangeParam, basePath }: AnalyticsDashboardPr
       <div className="flex flex-col gap-3">
         <AnalyticsRangeTabs range={range} basePath={basePath} />
         <p className="text-caption1-regular text-layout-body-default">
-          운영 앱의 Google Analytics 기준이며 10분마다 갱신돼요. 증감은 {previousLabel}과 비교한
+          {periods.current.startDate} ~ {periods.current.endDate} (한국 시간). 증감은{" "}
+          {previousLabel}({periods.previous.startDate} ~ {periods.previous.endDate})과 비교한
           값이에요.
         </p>
       </div>
-      {content}
+
+      <section aria-labelledby="analytics-service-title" className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
+          <h2 id="analytics-service-title" className="text-h3-semibold text-layout-header-default">
+            회원과 게시글
+          </h2>
+          <p className="text-caption1-regular text-layout-body-default">
+            서비스 서버가 집계한 값이에요.
+          </p>
+        </div>
+        <ServiceStatisticsCards {...periods} previousLabel={previousLabel} />
+      </section>
+
+      <section aria-labelledby="analytics-visit-title" className="flex flex-col gap-8">
+        <div className="flex flex-col gap-1">
+          <h2 id="analytics-visit-title" className="text-h3-semibold text-layout-header-default">
+            방문
+          </h2>
+          <p className="text-caption1-regular text-layout-body-default">
+            운영 앱의 Google Analytics 기준이며 10분마다 갱신돼요.
+          </p>
+        </div>
+        {content}
+      </section>
     </div>
   );
 };

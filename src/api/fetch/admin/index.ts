@@ -30,3 +30,7 @@ export { useGetNoticeDraft } from "./api/useGetNoticeDraft";
 export { usePostNoticeDraft } from "./api/usePostNoticeDraft";
 export { usePutNoticeDraft } from "./api/usePutNoticeDraft";
 export { useGetUserDetail } from "./api/useGetUserDetail";
+export * from "./types/StatisticsType";
+
+export { useGetUserStatistics } from "./api/useGetUserStatistics";
+export { useGetPostStatistics } from "./api/useGetPostStatistics";

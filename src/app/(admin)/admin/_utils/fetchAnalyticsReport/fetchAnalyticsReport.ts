@@ -2,9 +2,10 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import { BetaAnalyticsDataClient } from "@google-analytics/data";
 import { AnalyticsReport, AnalyticsRange } from "../../_types/AnalyticsReport";
-import { ANALYTICS_RANGES, ANALYTICS_WEEKLY_COUNT } from "../../_constants/ANALYTICS_RANGES";
+import { ANALYTICS_WEEKLY_COUNT } from "../../_constants/ANALYTICS_RANGES";
 import { RANKING_LIMIT, toAnalyticsReport } from "../toAnalyticsReport/toAnalyticsReport";
 import { getWeeklyRangeStart } from "../getWeeklyRangeStart/getWeeklyRangeStart";
+import { getAnalyticsPeriods } from "../getAnalyticsPeriods/getAnalyticsPeriods";
 
 /** GA 조회에 필요한 서버 env가 모두 있는지 확인합니다. 키는 브라우저로 내려가지 않도록 `NEXT_PUBLIC_`을 붙이지 않습니다. */
 export const hasAnalyticsConfig = () =>
@@ -20,13 +21,14 @@ const createClient = () =>
   });
 
 const requestAnalyticsReport = async (range: AnalyticsRange): Promise<AnalyticsReport> => {
-  const { days } = ANALYTICS_RANGES.find((item) => item.value === range) ?? ANALYTICS_RANGES[0];
   const property = `properties/${process.env.GA_PROPERTY_ID}`;
-  const dateRanges = [{ startDate: `${days - 1}daysAgo`, endDate: "today" }];
+  // GA 속성 시간대가 한국 시간이라 같은 날짜 문자열을 서버 통계 API와 함께 쓴다.
+  const { current, previous } = getAnalyticsPeriods(new Date(), range);
+  const dateRanges = [current];
   // 이름을 붙이면 GA가 응답에 dateRange 측정기준으로 어느 기간의 값인지 알려준다.
   const comparedDateRanges = [
-    { ...dateRanges[0], name: "current" },
-    { startDate: `${days * 2 - 1}daysAgo`, endDate: `${days}daysAgo`, name: "previous" },
+    { ...current, name: "current" },
+    { ...previous, name: "previous" },
   ];
 
   const client = createClient();
@@ -82,7 +84,9 @@ const requestAnalyticsReport = async (range: AnalyticsRange): Promise<AnalyticsR
           dateRanges,
           dimensions: [{ name: "searchTerm" }],
           metrics: [{ name: "eventCount" }],
-          dimensionFilter: { filter: { fieldName: "eventName", stringFilter: { value: "search" } } },
+          dimensionFilter: {
+            filter: { fieldName: "eventName", stringFilter: { value: "search" } },
+          },
           orderBys: [{ metric: { metricName: "eventCount" }, desc: true }],
           limit: RANKING_LIMIT + 5,
         },
@@ -123,6 +127,6 @@ const requestAnalyticsReport = async (range: AnalyticsRange): Promise<AnalyticsR
 /** GA 할당량을 아끼기 위해 기간별로 10분 동안 결과를 캐시합니다. */
 export const fetchAnalyticsReport = unstable_cache(
   requestAnalyticsReport,
-  ["admin-analytics-report-v3"],
+  ["admin-analytics-report-v4"],
   { revalidate: 600 }
 );
