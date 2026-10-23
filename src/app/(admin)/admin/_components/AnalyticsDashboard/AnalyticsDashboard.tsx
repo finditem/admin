@@ -6,9 +6,11 @@ import {
 } from "../../_utils/fetchAnalyticsReport/fetchAnalyticsReport";
 import { getAnalyticsPeriods } from "../../_utils/getAnalyticsPeriods/getAnalyticsPeriods";
 import { getServiceUrl } from "@/utils";
+import { verifyAdminSession } from "@/utils/verifyAdminSession/verifyAdminSession";
 import {
   AnalyticsRangeTabs,
   AnalyticsRankList,
+  AnalyticsSessionRefresh,
   AnalyticsSummaryCards,
   ServiceStatisticsCards,
   VisitorsBarChart,
@@ -169,12 +171,24 @@ const AnalyticsDashboard = async ({ rangeParam, basePath }: AnalyticsDashboardPr
     ANALYTICS_RANGES.find((item) => item.value === range) ?? ANALYTICS_RANGES[0];
   const periods = getAnalyticsPeriods(new Date(), range);
 
+  // GA는 서버의 서비스 계정 키로 조회하므로, 미들웨어 검사만 믿지 않고 그리기 전에 백엔드로 관리자인지 확인한다.
+  const session = hasAnalyticsConfig() ? await verifyAdminSession() : null;
+
   let content;
-  if (!hasAnalyticsConfig()) {
+  if (!session) {
     content = (
       <AdminNotice
         title="GA 연결 설정이 필요해요"
         description="서버 환경 변수 GA_PROPERTY_ID, GA_CLIENT_EMAIL, GA_PRIVATE_KEY를 등록하면 통계가 표시돼요."
+      />
+    );
+  } else if (session.status === "unauthorized") {
+    content = <AnalyticsSessionRefresh />;
+  } else if (session.status === "denied") {
+    content = (
+      <AdminNotice
+        title="관리자 계정을 확인하지 못했어요"
+        description="방문 통계는 관리자 확인이 끝난 뒤에만 보여줘요. 잠시 후 새로고침해 주세요."
       />
     );
   } else {

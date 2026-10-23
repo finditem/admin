@@ -3,3 +3,4 @@ export { default as AnalyticsSummaryCards } from "./AnalyticsSummaryCards/Analyt
 export { default as VisitorsBarChart } from "./VisitorsBarChart/VisitorsBarChart";
 export { default as AnalyticsRankList } from "./AnalyticsRankList/AnalyticsRankList";
 export { default as ServiceStatisticsCards } from "./ServiceStatisticsCards/ServiceStatisticsCards";
+export { default as AnalyticsSessionRefresh } from "./AnalyticsSessionRefresh/AnalyticsSessionRefresh";

@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import {
   ADMIN_NAV_COLLAPSED_ATTRIBUTE,
   ADMIN_NAV_COLLAPSED_STORAGE_KEY,
@@ -18,13 +19,16 @@ const style = ADMIN_NAV_SECTIONS.map(({ id }) => {
  * - 서버는 localStorage를 읽을 수 없어 모든 섹션을 펼친 상태로 그립니다. 이 스크립트가 본문보다 먼저 실행돼 부모 요소에 접힌 섹션 id를 달고, 함께 넣은 CSS가 그 섹션의 목록을 숨기고 화살표 방향을 바꿉니다.
  * - 부모 요소에는 `suppressHydrationWarning`을 줘야 합니다. 서버가 그린 속성값과 스크립트가 바꾼 값이 달라서입니다.
  * - 이후 상태 변경은 `useCollapsedNavSections`가 같은 속성을 갱신해 CSS와 어긋나지 않게 합니다.
+ * - CSP가 nonce 없는 인라인 스크립트를 막으므로 미들웨어가 넘긴 `x-nonce`를 붙입니다.
  */
 
-const AdminNavCollapsedScript = () => {
+const AdminNavCollapsedScript = async () => {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: style }} />
-      <script dangerouslySetInnerHTML={{ __html: script }} />
+      <script nonce={nonce} dangerouslySetInnerHTML={{ __html: script }} />
     </>
   );
 };

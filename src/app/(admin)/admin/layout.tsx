@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
-import { AdminNavCollapsedScript, AdminSidebar } from "./_components";
+import { AdminSidebar } from "./_components";
+// next/headers를 쓰는 서버 컴포넌트라 클라이언트 컴포넌트도 가져가는 _components 묶음에서 빼고 직접 가져온다.
+import AdminNavCollapsedScript from "./_components/AdminNavCollapsedScript/AdminNavCollapsedScript";
 import { ADMIN_NAV_COLLAPSED_ATTRIBUTE } from "./_constants/ADMIN_NAV_COLLAPSED";
 
 export const metadata: Metadata = {
