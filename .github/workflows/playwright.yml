@@ -13,8 +13,6 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.62.1-noble
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -30,6 +28,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # 브라우저는 설치된 @playwright/test 버전에 맞춰 받는다. 고정 버전 컨테이너 이미지를 쓰면 패키지만 올라갔을 때 브라우저를 찾지 못한다.
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Build Next.js app
         run: pnpm build
