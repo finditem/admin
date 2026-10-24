@@ -1,0 +1,70 @@
+# Dependabot 정기 버전 업데이트 설정이다.
+# 보안 경고에 따른 업데이트는 이 파일과 무관하게 저장소 설정(Settings > Code security)에서 켜고 끄며, 여기서는 정기 업데이트만 다룬다.
+#
+# 주의: Dependabot이 고친 pnpm-lock.yaml이 로컬 pnpm과 맞는지 머지 전에 로컬에서
+# pnpm install --frozen-lockfile로 한 번 확인한다.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Seoul"
+    # 그룹이 두 개뿐이라 한 번에 열리는 PR도 최대 두 개다.
+    open-pull-requests-limit: 2
+    # 게시된 지 7일이 지나지 않은 버전은 올리지 않는다. 악성 릴리스는 대개 며칠 안에 발각되어 내려간다.
+    # 보안 업데이트에는 적용되지 않으므로 취약점 패치는 바로 열린다.
+    cooldown:
+      default-days: 7
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      # 마이너와 패치는 PR 하나로 묶어 리뷰와 CI 실행을 줄인다.
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+      # 메이저도 패키지마다 PR을 따로 열지 않고 하나로 묶는다. 묶음 안에서 문제가 되는 패키지는 ignore에 추가한다.
+      major:
+        update-types:
+          - "major"
+    ignore:
+      # 프레임워크 메이저 업그레이드는 마이그레이션 작업이 필요하므로 손으로 올린다.
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+      # @types/node는 실행 환경(CI와 Vercel)의 Node 메이저 버전에 맞춰 손으로 올린다.
+      # 런타임보다 새로운 타입을 쓰면 실제로 없는 API도 타입 검사를 통과한다.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Seoul"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    open-pull-requests-limit: 1
+    # 액션 업데이트는 종류와 관계없이 PR 하나로 묶는다.
+    groups:
+      github-actions:
+        patterns:
+          - "*"

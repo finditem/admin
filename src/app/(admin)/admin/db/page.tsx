@@ -3,12 +3,12 @@ import { redirect } from "next/navigation";
 import { DetailHeader } from "@/components";
 import { cn } from "@/utils";
 import { hasValidToken } from "@/utils/hasValidToken/hasValidToken";
+import { verifyAdminSession } from "@/utils/verifyAdminSession/verifyAdminSession";
 import AdminNotice from "../_components/AdminNotice/AdminNotice";
 import { DbSqlPanel, DbTableList, DbTableView } from "./_components";
 import { DbTable } from "./_types/DbQueryType";
 import { getDbTables } from "./_utils/getDbTables/getDbTables";
 import { hasMetabaseConfig } from "./_utils/requestMetabase/requestMetabase";
-import { verifyAdminSession } from "./_utils/verifyAdminSession/verifyAdminSession";
 
 interface PageProps {
   searchParams: Promise<{
@@ -38,7 +38,7 @@ const page = async ({ searchParams }: PageProps) => {
   if (!hasToken) redirect("/login");
 
   // DB 내용을 보여주기 전에 관리자 계정인지 백엔드에 직접 확인한다.
-  if (!(await verifyAdminSession())) {
+  if ((await verifyAdminSession()).status !== "admin") {
     redirect("/login?reason=session-expired&callbackUrl=%2Fadmin%2Fdb");
   }
 

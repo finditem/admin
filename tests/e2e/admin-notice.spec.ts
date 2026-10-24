@@ -55,7 +55,7 @@ test.describe("관리자 공지사항 목록 페이지 (/admin/notice)", () => {
     await setupNoticeMocks(page);
     await page.goto("/admin/notice");
 
-    await page.getByText("최신순").click();
+    await page.getByRole("button", { name: "최신순 필터" }).click();
 
     await expect(page.getByRole("button", { name: "오래된순" })).toBeVisible();
     await expect(page.getByRole("button", { name: "조회순" })).toBeVisible();

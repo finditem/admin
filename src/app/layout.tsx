@@ -2,6 +2,7 @@ import "./globals.css";
 import ReactDOM from "react-dom";
 import localFont from "next/font/local";
 import { Metadata, Viewport } from "next";
+import { connection } from "next/server";
 import AppProviders from "@/providers/AppProviders";
 
 const pretendard = localFont({
@@ -59,11 +60,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 미리 만든 정적 HTML에는 요청마다 바뀌는 CSP nonce를 넣을 수 없으므로 모든 화면을 요청 때 그린다.
+  await connection();
+
   ReactDOM.preload("/icons/sprite.svg", { as: "image", type: "image/svg+xml" });
 
   return (
