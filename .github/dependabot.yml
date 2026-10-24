@@ -12,7 +12,8 @@ updates:
       day: "monday"
       time: "09:00"
       timezone: "Asia/Seoul"
-    open-pull-requests-limit: 5
+    # 그룹이 두 개뿐이라 한 번에 열리는 PR도 최대 두 개다.
+    open-pull-requests-limit: 2
     # 게시된 지 7일이 지나지 않은 버전은 올리지 않는다. 악성 릴리스는 대개 며칠 안에 발각되어 내려간다.
     # 보안 업데이트에는 적용되지 않으므로 취약점 패치는 바로 열린다.
     cooldown:
@@ -28,6 +29,10 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      # 메이저도 패키지마다 PR을 따로 열지 않고 하나로 묶는다. 묶음 안에서 문제가 되는 패키지는 ignore에 추가한다.
+      major:
+        update-types:
+          - "major"
     ignore:
       # 프레임워크 메이저 업그레이드는 마이그레이션 작업이 필요하므로 손으로 올린다.
       - dependency-name: "next"
@@ -57,3 +62,9 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    open-pull-requests-limit: 1
+    # 액션 업데이트는 종류와 관계없이 PR 하나로 묶는다.
+    groups:
+      github-actions:
+        patterns:
+          - "*"
