@@ -40,6 +40,10 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "tailwindcss"
         update-types: ["version-update:semver-major"]
+      # @types/node는 실행 환경(CI와 Vercel)의 Node 메이저 버전에 맞춰 손으로 올린다.
+      # 런타임보다 새로운 타입을 쓰면 실제로 없는 API도 타입 검사를 통과한다.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
