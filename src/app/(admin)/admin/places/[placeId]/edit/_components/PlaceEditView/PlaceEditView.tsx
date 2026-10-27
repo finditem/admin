@@ -24,7 +24,9 @@ const PlaceEditView = ({ placeId }: { placeId: number }) => {
 
   useEffect(() => {
     if (data?.result) {
-      methods.reset(toPlaceFormDefaultValues(data.result));
+      // reset은 필드 ref를 비우고 다시 렌더링될 때 register가 입력값을 채우게 두는데,
+      // React Compiler가 register 호출을 메모이즈해 입력값이 비어 있게 된다. ref를 유지해 곧바로 채운다.
+      methods.reset(toPlaceFormDefaultValues(data.result), { keepFieldsRef: true });
     }
   }, [data?.result, methods]);
 
