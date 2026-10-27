@@ -17,8 +17,8 @@
 - [x] 삭제 확인 모달 (2026-10-27 완료, `ConfirmModal` 재사용. mock 목록을 로컬 state로 바꿔 삭제 성공 시 실제로 빠지는 것처럼 보이게 함)
 - [x] ~~복구용 임시 입력창~~ — 2026-10-27에 복구 기능 자체를 범위에서 빼면서 같이 제거함
 - [x] 에러 코드별 메시지 매핑(`PLACE4xx`/`PLACE409`) + 그 외 공통 폴백 메시지 (2026-10-27 완료, `getPlaceErrorMessage` 유틸로 5개 훅에 공통 적용)
-- [ ] Jest 단위 테스트
-- [ ] Playwright e2e (등록→목록 노출→수정→삭제→복구 전체 흐름, `page.route`로 API 목업)
+- [x] Jest 단위 테스트 (2026-10-27 완료) — `toPlaceUpsertFormData.test.ts`(요일별 영업시간/휴무/팝업 운영기간/썸네일 FormData 조립 로직), `AdminPlaceListItem.test.tsx`(항목 렌더링, 수정 링크, 삭제 클릭), `AdminPlaceList.test.tsx`(목록/타입 필터/키워드 검색/빈 상태/삭제 확인 모달 흐름). `useDeletePlace`만 mock, 나머지는 실제 mock 데이터 사용
+- [ ] Playwright e2e (등록→목록 노출→수정→삭제 전체 흐름, `page.route`로 API 목업) — 복구 기능 제거로 "복구" 단계는 더 이상 포함하지 않음
 - [ ] `pnpm test` + `pnpm build` 통과 확인
 
 ## 열린 이슈 (백엔드 작업 대기)
