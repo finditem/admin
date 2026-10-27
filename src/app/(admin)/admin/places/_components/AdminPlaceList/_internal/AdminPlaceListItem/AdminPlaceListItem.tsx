@@ -8,7 +8,12 @@ const PLACE_TYPE_LABEL: Record<PlaceSummaryForAdmin["type"], string> = {
   POPUP: "팝업",
 };
 
-const AdminPlaceListItem = ({ data }: { data: PlaceSummaryForAdmin }) => {
+interface AdminPlaceListItemProps {
+  data: PlaceSummaryForAdmin;
+  onDeleteClick: (data: PlaceSummaryForAdmin) => void;
+}
+
+const AdminPlaceListItem = ({ data, onDeleteClick }: AdminPlaceListItemProps) => {
   const { placeId, name, type, address, thumbnailUrl, stationDistanceMeters } = data;
 
   return (
@@ -28,12 +33,21 @@ const AdminPlaceListItem = ({ data }: { data: PlaceSummaryForAdmin }) => {
         </p>
       </div>
 
-      <Link
-        href={`/admin/places/${placeId}/edit`}
-        className="shrink-0 text-body2-regular text-brand-normal-default"
-      >
-        수정
-      </Link>
+      <div className="flex shrink-0 items-center gap-3">
+        <Link
+          href={`/admin/places/${placeId}/edit`}
+          className="text-body2-regular text-brand-normal-default"
+        >
+          수정
+        </Link>
+        <button
+          type="button"
+          onClick={() => onDeleteClick(data)}
+          className="text-body2-regular text-system-warning"
+        >
+          삭제
+        </button>
+      </div>
     </li>
   );
 };

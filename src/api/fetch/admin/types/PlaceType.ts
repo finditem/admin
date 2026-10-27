@@ -64,7 +64,6 @@ export interface PostPlaceResponse extends ApiBaseResponseType<PlaceManagementRe
 export interface GetPlaceDetailResponse extends ApiBaseResponseType<PlaceManagementResult> {}
 export interface PutPlaceResponse extends ApiBaseResponseType<PlaceManagementResult> {}
 export interface DeletePlaceResponse extends ApiBaseResponseType<PlaceIdResult> {}
-export interface RestorePlaceResponse extends ApiBaseResponseType<PlaceIdResult> {}
 
 // 아래는 backend-api-assumptions.md의 가정 스펙 기준. 백엔드 실제 API가 나오면 함께 확인한다.
 export interface PlaceSummaryForAdmin {

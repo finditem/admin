@@ -40,4 +40,3 @@ export { usePostPlace } from "./api/usePostPlace";
 export { useGetPlaceDetail } from "./api/useGetPlaceDetail";
 export { usePutPlace } from "./api/usePutPlace";
 export { useDeletePlace } from "./api/useDeletePlace";
-export { usePatchRestorePlace } from "./api/usePatchRestorePlace";
