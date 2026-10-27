@@ -34,3 +34,10 @@ export * from "./types/StatisticsType";
 
 export { useGetUserStatistics } from "./api/useGetUserStatistics";
 export { useGetPostStatistics } from "./api/useGetPostStatistics";
+export * from "./types/PlaceType";
+
+export { usePostPlace } from "./api/usePostPlace";
+export { useGetPlaceDetail } from "./api/useGetPlaceDetail";
+export { usePutPlace } from "./api/usePutPlace";
+export { useDeletePlace } from "./api/useDeletePlace";
+export { usePatchRestorePlace } from "./api/usePatchRestorePlace";
