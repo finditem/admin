@@ -17,9 +17,10 @@
 - [x] 삭제 확인 모달 (2026-10-27 완료, `ConfirmModal` 재사용. mock 목록을 로컬 state로 바꿔 삭제 성공 시 실제로 빠지는 것처럼 보이게 함)
 - [x] ~~복구용 임시 입력창~~ — 2026-10-27에 복구 기능 자체를 범위에서 빼면서 같이 제거함
 - [x] 에러 코드별 메시지 매핑(`PLACE4xx`/`PLACE409`) + 그 외 공통 폴백 메시지 (2026-10-27 완료, `getPlaceErrorMessage` 유틸로 5개 훅에 공통 적용)
-- [ ] Jest 단위 테스트
-- [ ] Playwright e2e (등록→목록 노출→수정→삭제 전체 흐름, `page.route`로 API 목업)
-- [ ] `pnpm test` + `pnpm build` 통과 확인
+- [x] Jest 단위 테스트 (2026-10-27 완료) — `toPlaceUpsertFormData.test.ts`(요일별 영업시간/휴무/팝업 운영기간/썸네일 FormData 조립 로직), `AdminPlaceListItem.test.tsx`(항목 렌더링, 수정 링크, 삭제 클릭), `AdminPlaceList.test.tsx`(목록/타입 필터/키워드 검색/빈 상태/삭제 확인 모달 흐름). `useDeletePlace`만 mock, 나머지는 실제 mock 데이터 사용
+- [x] Playwright e2e (2026-10-27 완료, `tests/e2e/admin-places.spec.ts`. 목록 표시/검색/빈 상태/유형 필터 팝업/삭제 확인 모달, 등록 폼 필수값 검증·팝업 운영기간 노출·등록 제출 후 목록 이동, 수정 폼 기존값 채움·유형 선택 비활성화·수정 제출 후 목록 이동. API는 `page.route`로 목업. `CI=1 E2E_PORT=3918 pnpm test:e2e`로 실제 빌드 기준 10개 모두 통과 확인)
+- [x] 수정 화면 버그 수정 (2026-10-27, e2e로 처음 발견): `/admin/places/[placeId]/edit`에서 기존 값으로 폼을 채우는 `methods.reset()`이 실제 브라우저(프로덕션 빌드)에서는 적용되지 않고 빈 폼으로 남는 문제가 있었음. React Compiler가 `register` 호출을 메모이즈해 생기는 문제로, 공지 임시저장 불러오기(`notice/write/page.tsx`)에 이미 있던 것과 같은 원인. `reset(..., { keepFieldsRef: true })`로 수정
+- [x] `pnpm test` + `pnpm build` 통과 확인 (2026-10-27, Jest 411/411, e2e 52/52, build 성공)
 
 ## 열린 이슈 (백엔드 작업 대기)
 
