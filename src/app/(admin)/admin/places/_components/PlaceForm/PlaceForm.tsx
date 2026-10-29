@@ -40,6 +40,7 @@ const PlaceForm = ({ methods, mode, onSubmit, isPending }: PlaceFormProps) => {
   const values = useWatch({ control: methods.control });
   const isSubmitDisabled = !canSubmit(values as PlaceFormValues) || isPending;
   const isEdit = mode === "edit";
+  const operationEndDateError = methods.formState.errors.operationEndDate?.message;
 
   return (
     <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col h-base">
@@ -160,18 +161,35 @@ const PlaceForm = ({ methods, mode, onSubmit, isPending }: PlaceFormProps) => {
               type="date"
               aria-label="운영 시작일"
               className="text-neutral-strong-entered h-10 w-full rounded-[8px] border border-divider-default px-2 text-body2-regular bg-fill-neutral-strong-default"
-              {...methods.register("operationStartDate", { required: values.type === "POPUP" })}
+              {...methods.register("operationStartDate", {
+                required: values.type === "POPUP",
+                // 시작일을 바꾸면 종료일 검사도 다시 한다.
+                deps: ["operationEndDate"],
+              })}
             />
             <span className="text-body2-regular text-layout-body-default">~</span>
             <input
               type="date"
               aria-label="운영 종료일"
               className="text-neutral-strong-entered h-10 w-full rounded-[8px] border border-divider-default px-2 text-body2-regular bg-fill-neutral-strong-default"
-              {...methods.register("operationEndDate", { required: values.type === "POPUP" })}
+              {...methods.register("operationEndDate", {
+                required: values.type === "POPUP",
+                validate: (endDate, { operationStartDate }) =>
+                  !endDate ||
+                  !operationStartDate ||
+                  endDate >= operationStartDate ||
+                  "종료일은 시작일과 같거나 이후여야 합니다.",
+              })}
             />
           </div>
-          <p className="text-caption1-regular text-layout-body-default">
-            종료일은 시작일과 같거나 이후여야 합니다.
+          <p
+            className={
+              operationEndDateError
+                ? "text-caption1-regular text-system-warning"
+                : "text-caption1-regular text-layout-body-default"
+            }
+          >
+            {operationEndDateError ?? "종료일은 시작일과 같거나 이후여야 합니다."}
           </p>
         </div>
       )}

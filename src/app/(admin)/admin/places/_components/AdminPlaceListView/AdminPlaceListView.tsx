@@ -14,7 +14,9 @@ const AdminPlaceListView = () => {
   const searchParams = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
 
-  const [type, setType] = useState<PlaceTypeFilter>("");
+  const typeParam = searchParams.get("type");
+  const type: PlaceTypeFilter =
+    PLACE_TYPE_OPTIONS.find((option) => option.value === typeParam)?.value ?? "";
   const [pendingType, setPendingType] = useState<PlaceTypeFilter | null>(null);
 
   const placeFilters = [
@@ -25,20 +27,22 @@ const AdminPlaceListView = () => {
     },
   ];
 
-  const handleApply = () => {
-    setType(pendingType as PlaceTypeFilter);
-    setPendingType(null);
-  };
-
-  const handleSearch = (newKeyword: string) => {
+  const updateQuery = (key: "keyword" | "type", value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (newKeyword) {
-      params.set("keyword", newKeyword);
+    if (value) {
+      params.set(key, value);
     } else {
-      params.delete("keyword");
+      params.delete(key);
     }
     router.replace(`?${params.toString()}`);
   };
+
+  const handleApply = () => {
+    updateQuery("type", pendingType as PlaceTypeFilter);
+    setPendingType(null);
+  };
+
+  const handleSearch = (newKeyword: string) => updateQuery("keyword", newKeyword);
 
   return (
     <>

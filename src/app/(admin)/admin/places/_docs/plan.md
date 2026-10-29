@@ -18,7 +18,7 @@
 - [x] ~~복구용 임시 입력창~~ — 2026-10-27에 복구 기능 자체를 범위에서 빼면서 같이 제거함
 - [x] 에러 코드별 메시지 매핑(`PLACE4xx`/`PLACE409`) + 그 외 공통 폴백 메시지 (2026-10-27 완료, `getPlaceErrorMessage` 유틸로 5개 훅에 공통 적용)
 - [ ] Jest 단위 테스트
-- [ ] Playwright e2e (등록→목록 노출→수정→삭제→복구 전체 흐름, `page.route`로 API 목업)
+- [ ] Playwright e2e (등록→목록 노출→수정→삭제 전체 흐름, `page.route`로 API 목업)
 - [ ] `pnpm test` + `pnpm build` 통과 확인
 
 ## 열린 이슈 (백엔드 작업 대기)

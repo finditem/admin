@@ -84,15 +84,3 @@ export interface GetAdminPlacesResult {
 }
 
 export interface GetAdminPlacesResponse extends ApiBaseResponseType<GetAdminPlacesResult> {}
-
-export interface DeletedPlaceSummaryForAdmin extends PlaceSummaryForAdmin {
-  deletedAt: string;
-}
-
-export interface GetDeletedAdminPlacesResult {
-  content: DeletedPlaceSummaryForAdmin[];
-  hasNext: boolean;
-  nextCursor: string | null;
-}
-
-export interface GetDeletedAdminPlacesResponse extends ApiBaseResponseType<GetDeletedAdminPlacesResult> {}
