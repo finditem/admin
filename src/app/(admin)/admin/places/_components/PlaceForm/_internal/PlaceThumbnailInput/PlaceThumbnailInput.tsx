@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Icon } from "@/components";
+import { useObjectURLs } from "@/hooks";
 import { PlaceFormValues } from "../../../../_types/PlaceFormValues";
 
 /** 등록/수정 폼의 썸네일 첨부 입력입니다. 새로 고른 파일이 있으면 미리보기를, 없으면 기존 썸네일을 보여줍니다. */
@@ -13,7 +14,8 @@ const PlaceThumbnailInput = () => {
   const thumbnail = useWatch({ control, name: "thumbnail" });
   const existingThumbnailUrl = useWatch({ control, name: "existingThumbnailUrl" });
 
-  const previewUrl = thumbnail ? URL.createObjectURL(thumbnail) : existingThumbnailUrl || null;
+  const [thumbnailObjectUrl] = useObjectURLs(thumbnail ? [thumbnail] : []);
+  const previewUrl = (thumbnail && thumbnailObjectUrl) || existingThumbnailUrl || null;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

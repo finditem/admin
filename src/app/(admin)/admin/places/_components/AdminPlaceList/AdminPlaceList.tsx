@@ -8,6 +8,10 @@ import { PlaceTypeFilter } from "../../_constants/PLACE_TYPE_OPTIONS";
 import AdminPlaceListItem from "./_internal/AdminPlaceListItem/AdminPlaceListItem";
 import DeletePlaceConfirmModal from "./_internal/DeletePlaceConfirmModal/DeletePlaceConfirmModal";
 
+// mock 목록의 placeId가 dev 서버의 실제 장소 ID와 같아 삭제하면 실제 장소가 지워지고, 복구할 방법도 없다.
+// 관리자용 목록 API가 생겨 실제 데이터를 보여주게 되면 false로 바꾸거나 이 상수를 지운다.
+const IS_DELETE_DISABLED = true;
+
 interface AdminPlaceListProps {
   type: PlaceTypeFilter;
   keyword: string;
@@ -57,7 +61,12 @@ const AdminPlaceList = ({ type, keyword }: AdminPlaceListProps) => {
       <section aria-label="성수 콘텐츠 목록">
         <ul>
           {places.map((place) => (
-            <AdminPlaceListItem key={place.placeId} data={place} onDeleteClick={setPlaceToDelete} />
+            <AdminPlaceListItem
+              key={place.placeId}
+              data={place}
+              onDeleteClick={setPlaceToDelete}
+              isDeleteDisabled={IS_DELETE_DISABLED}
+            />
           ))}
         </ul>
       </section>

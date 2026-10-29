@@ -8,7 +8,11 @@ const TIME_INPUT_CLASS =
   "h-10 w-full rounded-[8px] border border-divider-default bg-fill-neutral-strong-default px-2 text-body2-regular text-neutral-strong-entered";
 
 const WeeklyScheduleInput = () => {
-  const { register, control } = useFormContext<PlaceFormValues>();
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<PlaceFormValues>();
   const weeklySchedules = useWatch({ control, name: "weeklySchedules" });
 
   return (
@@ -22,6 +26,8 @@ const WeeklyScheduleInput = () => {
           const schedule = weeklySchedules?.[index];
           const isClosed = schedule?.isClosed;
           const hasBreak = schedule?.hasBreak;
+          const dayErrors = errors.weeklySchedules?.[index];
+          const scheduleError = dayErrors?.businessEnd?.message ?? dayErrors?.breakEnd?.message;
 
           return (
             <div
@@ -45,6 +51,11 @@ const WeeklyScheduleInput = () => {
                       className={TIME_INPUT_CLASS}
                       {...register(`weeklySchedules.${index}.businessStart`, {
                         required: !isClosed,
+                        // 시작 시간을 바꾸면 종료 시간과 브레이크타임 검사도 다시 한다.
+                        deps: [
+                          `weeklySchedules.${index}.businessEnd`,
+                          `weeklySchedules.${index}.breakEnd`,
+                        ],
                       })}
                     />
                     <span className="text-body2-regular text-layout-body-default">~</span>
@@ -54,6 +65,15 @@ const WeeklyScheduleInput = () => {
                       className={TIME_INPUT_CLASS}
                       {...register(`weeklySchedules.${index}.businessEnd`, {
                         required: !isClosed,
+                        deps: [`weeklySchedules.${index}.breakEnd`],
+                        validate: (businessEnd, { weeklySchedules }) => {
+                          const { businessStart } = weeklySchedules[index];
+                          if (!businessStart || !businessEnd) return true;
+                          return (
+                            businessEnd > businessStart ||
+                            "영업 종료 시간은 시작 시간보다 늦어야 해요."
+                          );
+                        },
                       })}
                     />
                   </div>
@@ -71,6 +91,7 @@ const WeeklyScheduleInput = () => {
                         className={TIME_INPUT_CLASS}
                         {...register(`weeklySchedules.${index}.breakStart`, {
                           required: hasBreak,
+                          deps: [`weeklySchedules.${index}.breakEnd`],
                         })}
                       />
                       <span className="text-body2-regular text-layout-body-default">~</span>
@@ -80,11 +101,28 @@ const WeeklyScheduleInput = () => {
                         className={TIME_INPUT_CLASS}
                         {...register(`weeklySchedules.${index}.breakEnd`, {
                           required: hasBreak,
+                          validate: (breakEnd, { weeklySchedules }) => {
+                            const { businessStart, businessEnd, breakStart } =
+                              weeklySchedules[index];
+                            if (!breakStart || !breakEnd) return true;
+                            if (breakEnd <= breakStart) {
+                              return "브레이크타임 종료 시간은 시작 시간보다 늦어야 해요.";
+                            }
+                            if (!businessStart || !businessEnd) return true;
+                            return (
+                              (breakStart >= businessStart && breakEnd <= businessEnd) ||
+                              "브레이크타임은 영업시간 안에 있어야 해요."
+                            );
+                          },
                         })}
                       />
                     </div>
                   )}
                 </>
+              )}
+
+              {scheduleError && (
+                <p className="text-caption1-regular text-system-warning">{scheduleError}</p>
               )}
             </div>
           );

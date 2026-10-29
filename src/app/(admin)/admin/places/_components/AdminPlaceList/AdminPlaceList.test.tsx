@@ -49,20 +49,18 @@ describe("AdminPlaceList", () => {
     expect(screen.getByText("검색 결과가 없어요")).toBeInTheDocument();
   });
 
-  it("삭제 확인 모달에서 확인을 누르면 목록에서 해당 장소가 사라진다", () => {
+  it("삭제가 막혀 있어 삭제 버튼을 눌러도 확인 모달이 열리지 않는다", () => {
     const target = MOCK_ADMIN_PLACE_LIST[0];
     render(<AdminPlaceList type="" keyword="" />);
 
     const item = screen.getByRole("heading", { name: target.name }).closest("li") as HTMLElement;
-    fireEvent.click(within(item).getByRole("button", { name: "삭제" }));
+    const deleteButton = within(item).getByRole("button", { name: "삭제" });
+    expect(deleteButton).toBeDisabled();
 
-    const dialog = screen.getByRole("dialog");
-    expect(within(dialog).getByText(`'${target.name}'을 삭제하시겠습니까?`)).toBeInTheDocument();
+    fireEvent.click(deleteButton);
 
-    fireEvent.click(within(dialog).getByRole("button", { name: "삭제" }));
-
-    expect(mockMutate).toHaveBeenCalled();
-    expect(screen.queryByRole("heading", { name: target.name })).not.toBeInTheDocument();
-    expect(screen.getAllByRole("listitem")).toHaveLength(MOCK_ADMIN_PLACE_LIST.length - 1);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(mockMutate).not.toHaveBeenCalled();
+    expect(screen.getAllByRole("listitem")).toHaveLength(MOCK_ADMIN_PLACE_LIST.length);
   });
 });

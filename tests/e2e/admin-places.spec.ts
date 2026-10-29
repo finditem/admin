@@ -115,25 +115,11 @@ test.describe("관리자 장소 목록 페이지 (/admin/places)", () => {
     await expect(page.getByRole("button", { name: "적용하기" })).toBeVisible();
   });
 
-  test("삭제 확인 모달에서 확인을 누르면 목록에서 사라진다", async ({ page }) => {
-    await page.route("**/api/admin/places/11", (route) => {
-      if (route.request().method() !== "DELETE") return route.fallback();
-      return route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(okEnvelope({ placeId: 11 })),
-      });
-    });
-
+  test("삭제가 막혀 있어 삭제 버튼이 비활성화돼 있다", async ({ page }) => {
     await page.goto("/admin/places");
 
     const item = page.getByRole("heading", { name: "호호식당 성수" }).locator("..").locator("..");
-    await item.getByRole("button", { name: "삭제" }).click();
-
-    await expect(page.getByText("'호호식당 성수'을 삭제하시겠습니까?")).toBeVisible();
-    await page.getByRole("dialog").getByRole("button", { name: "삭제" }).click();
-
-    await expect(page.getByRole("heading", { name: "호호식당 성수" })).not.toBeVisible();
+    await expect(item.getByRole("button", { name: "삭제" })).toBeDisabled();
   });
 });
 

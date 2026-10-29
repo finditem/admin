@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { FormProvider, useForm } from "react-hook-form";
 import { useGetPlaceDetail } from "@/api/fetch/admin";
-import { LoadingState } from "@/components";
+import { Button, EmptyState, LoadingState } from "@/components";
 import { PlaceForm } from "../../../../_components";
 import { PlaceFormValues } from "../../../../_types/PlaceFormValues";
 import {
@@ -13,7 +14,7 @@ import {
 import { useSubmitPlace } from "../../../../_hooks/useSubmitPlace";
 
 const PlaceEditView = ({ placeId }: { placeId: number }) => {
-  const { data, isLoading } = useGetPlaceDetail({ placeId });
+  const { data, isLoading, isError } = useGetPlaceDetail({ placeId });
   const { submitPlace, isPending } = useSubmitPlace(placeId);
 
   const methods = useForm<PlaceFormValues>({
@@ -31,6 +32,21 @@ const PlaceEditView = ({ placeId }: { placeId: number }) => {
   }, [data?.result, methods]);
 
   if (isLoading) return <LoadingState title="장소 정보를 불러오고 있어요" />;
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center gap-6">
+        <EmptyState
+          icon={{ iconName: "NoPublicDataSearch", iconSize: 70 }}
+          title="장소 정보를 불러오지 못했어요"
+          description={"없는 장소이거나 접근 권한이 없을 수 있어요.\n목록에서 다시 선택해 주세요."}
+        />
+        <Button as={Link} href="/admin/places" size="small">
+          목록으로 돌아가기
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <FormProvider<PlaceFormValues> {...methods}>

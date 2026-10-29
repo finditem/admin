@@ -11,9 +11,15 @@ const PLACE_TYPE_LABEL: Record<PlaceSummaryForAdmin["type"], string> = {
 interface AdminPlaceListItemProps {
   data: PlaceSummaryForAdmin;
   onDeleteClick: (data: PlaceSummaryForAdmin) => void;
+  /** true면 삭제 버튼을 누를 수 없다. */
+  isDeleteDisabled?: boolean;
 }
 
-const AdminPlaceListItem = ({ data, onDeleteClick }: AdminPlaceListItemProps) => {
+const AdminPlaceListItem = ({
+  data,
+  onDeleteClick,
+  isDeleteDisabled = false,
+}: AdminPlaceListItemProps) => {
   const { placeId, name, type, address, thumbnailUrl, stationDistanceMeters } = data;
 
   return (
@@ -43,7 +49,8 @@ const AdminPlaceListItem = ({ data, onDeleteClick }: AdminPlaceListItemProps) =>
         <button
           type="button"
           onClick={() => onDeleteClick(data)}
-          className="text-body2-regular text-system-warning"
+          disabled={isDeleteDisabled}
+          className="text-body2-regular text-system-warning disabled:cursor-not-allowed disabled:opacity-40"
         >
           삭제
         </button>
