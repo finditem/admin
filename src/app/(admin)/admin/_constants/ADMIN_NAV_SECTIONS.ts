@@ -33,6 +33,11 @@ export const ADMIN_NAV_SECTIONS = [
     items: [{ href: "/admin/content-agree", title: "콘텐츠 활용 동의 게시글" }],
   },
   {
+    id: "places",
+    label: "성수 콘텐츠",
+    items: [{ href: "/admin/places", title: "성수 콘텐츠 관리" }],
+  },
+  {
     id: "shortcut",
     label: "바로가기",
     items: [
